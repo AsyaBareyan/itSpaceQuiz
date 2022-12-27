@@ -1,0 +1,136 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="addUserTable" author="AsyaBareyan">
+        <sql>create type user_enum AS ENUM ('STUDENT','TEACHER')</sql>
+        <createTable tableName="user">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints unique="false" primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_type" type="user_enum">
+                <constraints nullable="false"/>
+
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="addQuizTable" author="AsyaBareyan">
+        <createTable tableName="quiz">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+<changeSet id="addQuestionTable" author="AsyaBareyan">
+    <sql>create type question_enum AS ENUM ('MULTI_SELECT','SINGLE_SELECT')</sql>
+<createTable tableName="question">
+    <column name="id" type="int" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+    </column>
+    <column name="title" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+    </column>
+    <column name="score" type="double">
+        <constraints nullable="false"/>
+    </column>
+    <column name="question_type" type="question_enum">
+        <constraints nullable="false"/>
+    </column>
+    <column name="quiz_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+</createTable>
+<addForeignKeyConstraint baseTableName="question"
+                         baseColumnNames="quiz_id"
+                         constraintName="quiz_fk"
+                         referencedTableName="quiz"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+
+</changeSet>
+    <changeSet id="addQuestionOptionTable" author="AsyaBareyan">
+<createTable tableName="question_option">
+    <column name="id" type="int" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+    </column>
+    <column name="title" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+    </column>
+    <column name="is_correct" type="boolean">
+        <constraints nullable="false"/>
+    </column>
+    <column name="question_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+</createTable>
+<addForeignKeyConstraint baseTableName="question_option"
+                         baseColumnNames="question_id"
+                         constraintName="question_fk"
+                         referencedTableName="question"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+
+</changeSet>
+    <changeSet id="addAnswerTable" author="AsyaBareyan">
+<createTable tableName="answer">
+    <column name="id" type="int" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+    </column>
+    <column name="user_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+    <column name="question_id" type="int">
+        <constraints nullable="false"/>    </column>
+    <column name="question_option_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+    <column name="date_time" type="datetime">
+        <constraints nullable="false"/>
+    </column>
+</createTable>
+<addForeignKeyConstraint baseTableName="answer"
+                         baseColumnNames="user_id"
+                         constraintName="user_fk"
+                         referencedTableName="user"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="answer"
+                         baseColumnNames="question_id"
+                         constraintName="question_fk"
+                         referencedTableName="question"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="answer"
+                         baseColumnNames="question_option_id"
+                         constraintName="questionOption_fk"
+                         referencedTableName="question_option"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+
+</changeSet>
+
+        </databaseChangeLog>

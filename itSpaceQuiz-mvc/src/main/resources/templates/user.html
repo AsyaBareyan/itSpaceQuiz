@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Hello user
+
+<table border="1">
+    <tr>
+        <th>title</th>
+        <th>action</th>
+    </tr>
+
+    <tr th:each="quiz:${quizzes}" >
+        <td th:text="${quiz.title}" ></td>
+        <td><a th:href="@{'/user/quiz/'+${quiz.id}}">take quiz</a></td>
+    </tr>
+
+</table>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+</head>
+<body>
+<!--<a th:each="quiz: ${quizzes}" th:href="@{'/singleQuiz'}" ><br>-->
+<!--    <span th:text="${quiz.title}"></span>-->
+
+<!--</a>-->
+
+<table border="1">
+    <tr>
+        <th>id</th>
+        <th>title</th>
+        <th>created Date</th>
+        <th th:if="${quiz != null}">action</th>
+    </tr>
+
+    <tr th:each="quiz:${quizzes}" >
+        <td th:text="${quiz.id}"> </td>
+        <td><a th:text="${quiz.title}" th:href="@{'/questions/byQuiz/' + ${quiz.id}}"></a></td>
+        <td th:text="${quiz.createdDateTime}"></td>
+        <td th:if="${quiz != null}"><a th:href="@{'/deleteQuiz/' + ${quiz.id}}">delete</a> |<a th:href="@{'/editQuiz/' + ${quiz.id}}">edit</a>  </td>
+    </tr>
+
+</table>
+</body>
+</html>

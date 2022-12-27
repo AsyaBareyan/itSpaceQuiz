@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create quiz</title>
+</head>
+<body>
+<form action="/quiz" method="post">
+    <input th:if="${quiz != null}" type="hidden" th:value="${quiz.id}" name="id">
+    Title: <input type="text" name="title" th:value="${quiz == null} ? '' : ${quiz.title}"/> <br>
+    created date:<input type="datetime-local" name="createdDateTime" th:value="${quiz == null} ? '' : ${quiz.createdDateTime}"/><br>
+    <br>
+    <input type="submit" value="save">
+
+</form>
+
+</body>
+</html>

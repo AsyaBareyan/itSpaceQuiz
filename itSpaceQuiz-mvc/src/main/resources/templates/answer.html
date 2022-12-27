@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Answer</title>
+</head>
+<body>
+
+<form th:if="${quiz!=null}" th:action="@{|/user/quiz/${quiz.id}|}" name="quiz" method="post">
+    <!--    <div th:each="question:${questions}">-->
+
+    <!--        <input type="hidden" th:value="${question.id}" name="id">-->
+    <!--    </div>-->
+    <span th:text="${question.title}"/> <br>
+
+    <input type="hidden" th:value="${question.id}" name="question">
+    <div th:if="${question.questionType.name()=='SINGLE_SELECT'}">
+        <div th:each="option:${options}" style="display: flex-wrap">
+
+            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption ">
+
+            <label for="1">
+                <input type="radio" th:text="${option.title}" name="qOption" id="1"
+                       th:value="${option == null} ? '' : ${option.title}">
+            </label>
+        </div>
+    </div>
+    <div th:if="${question.questionType.name()=='MULTI_SELECT'}">
+        <div th:each="option:${options}" style="display: flex">
+
+            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption ">
+
+            <label for="2">
+                <input type="checkbox" th:text="${option.title}" name="qOption" id="2"
+                       th:value="${option == null} ? '' : ${option.title}">
+            </label>
+        </div>
+    </div>
+
+    <input type="submit" value="answer">
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Questions</title>
+</head>
+<body>
+
+<table border="1">
+    <tr>
+        <th>id</th>
+        <th>title</th>
+        <th>type</th>
+        <th>score</th>
+        <th>quiz</th>
+
+        <th th:if="${question != null}">action</th>
+    </tr>
+
+    <tr th:each="question:${questions}">
+        <td th:text="${question.id}"></td>
+        <td th:text="${question.title}"></td>
+        <td th:text="${question.questionType}"></td>
+        <td th:text="${question.score}"></td>
+        <td th:text="${question.quiz.title}"></td>
+        <td th:if="${question != null}"><a th:href="@{'/deleteQuestion/' + ${question.id}}">delete</a> |<a
+                th:href="@{'/editQuestion/' + ${question.id}}">edit</a></td>
+    </tr>
+
+</table>
+</body>
+</html>
