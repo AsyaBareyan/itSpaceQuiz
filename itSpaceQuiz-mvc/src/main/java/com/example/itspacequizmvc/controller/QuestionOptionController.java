@@ -24,13 +24,9 @@ public class QuestionOptionController {
 
     @PostMapping("/questionOption")
     public String createQuestionOption(
-//            @RequestParam("radio1") String radio1,
-//            @RequestParam("radio2") String radio2,
-//            @RequestParam("radio3") String radio3,
             @RequestParam("questionOption") String[] titles) {
         questionOptionService.update(titles);
-//        questionOptionService.update(titles, radio2);
-//        questionOptionService.update(titles, radio3);
+
 
 
         return "redirect:/questions";

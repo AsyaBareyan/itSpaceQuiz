@@ -42,7 +42,7 @@ public class QuizController {
     @GetMapping("/deleteQuiz/{id}")
     public String deleteQuiz(@PathVariable("id") int id) {
         quizService.deleteById(id);
-        return "redirect:/login";
+        return "redirect:/quizzes";
     }
 
     @GetMapping("/editQuiz/{id}")
@@ -53,8 +53,4 @@ public class QuizController {
 
     }
 
-    @GetMapping("/singleQuiz")
-    public String singleQuizPage(){
-        return "singleQuiz";
-    }
 }

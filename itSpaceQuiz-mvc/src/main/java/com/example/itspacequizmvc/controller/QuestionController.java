@@ -2,6 +2,7 @@ package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.Question;
 import com.example.itspacequizcommon.entity.QuestionOption;
+import com.example.itspacequizcommon.entity.QuestionType;
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizmvc.service.QuestionOptionService;
 import com.example.itspacequizmvc.service.QuestionService;
@@ -12,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -30,19 +32,30 @@ public class QuestionController {
     }
 
     @PostMapping("/question")
-    public String createQuestion(@ModelAttribute Question question,
-                                 @RequestParam("title1") String title1,
-                                 @RequestParam("title2") String title2,
-                                 @RequestParam("title3") String title3,
-                                 @RequestParam("title4") String title4) {
+    public String createQuestion(
+            @ModelAttribute Question question, ModelMap map,
+            @RequestParam("title1") String title1,
+            @RequestParam("title2") String title2,
+            @RequestParam("title3") String title3,
+            @RequestParam("title4") String title4) {
         questionService.save(question);
-        questionOptionService.saveOptions(question, title1);
-        questionOptionService.saveOptions(question,title2);
-        questionOptionService.saveOptions(question,title3);
-        questionOptionService.saveOptions(question,title4);
+        if (question.getQuestionType() == QuestionType.MULTI_SELECT) {
+            questionOptionService.saveMultiOptions(question, title1);
+            questionOptionService.saveMultiOptions(question, title2);
+            questionOptionService.saveMultiOptions(question, title3);
+            questionOptionService.saveMultiOptions(question, title4);
 
+        }else {
+            questionOptionService.saveOptions(question, title1);
+            questionOptionService.saveOptions(question, title2);
+            questionOptionService.saveOptions(question, title3);
+            questionOptionService.saveOptions(question, title4);
 
-        return "redirect:/questions";
+        }
+        int id = question.getQuiz().getId();
+        map.addAttribute("quiz",id );
+
+        return "redirect:/questions/byQuiz/"+id;
     }
 
 
@@ -61,17 +74,27 @@ public class QuestionController {
 
     @GetMapping("/deleteQuestion/{id}")
     public String deleteQuestion(@PathVariable("id") int id) {
+
         questionService.deleteById(id);
+
         return "redirect:/questions";
     }
 
     @GetMapping("/editQuestion/{id}")
     public String editQuestionPage(ModelMap map,
                                    @PathVariable("id") int id) {
-        map.addAttribute("question", questionService.findById(id));
+        Question question = questionService.findById(id);
+        map.addAttribute("question",question );
+            Quiz quiz = question.getQuiz();
+        List<QuestionOption> options = questionOptionService.findAllByQuestion(question);
+
+        map.addAttribute("options",options);
+        map.addAttribute("quiz",quiz);
+
         return "saveQuestion";
 
     }
+
 }
 
 
