@@ -1,9 +1,6 @@
 package com.example.itspacequizrest.controller;
 
 
-import com.example.itspacequizcommon.entity.User;
-
-
 import com.example.itspacequizrest.dto.SaveUserRequest;
 import com.example.itspacequizrest.dto.UserResponseDto;
 import com.example.itspacequizrest.service.UserService;
@@ -32,9 +29,11 @@ public class UserController {
 
 
     }
+
     @GetMapping("/user/{id}")
-    public UserResponseDto getUserById(@PathVariable("id") int id) {
-        return modelMapper.map(userService.getById(id), UserResponseDto.class);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") int id) {
+        return userService.getById(id);
+
 
     }
 

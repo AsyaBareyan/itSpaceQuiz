@@ -6,11 +6,15 @@
 </head>
 <body>
 <form action="/login" method="post">
-    <label for="email"></label><br>
-    <input type="email" id="email" name="email" placeholder="Input your email"><br>
-    <label for="password" ></label><br>
-    <input type="password" id="password" name="password" placeholder="Input your password" ><br>
-    <input type="submit" value="LOGIN">
-</form><br>
+    <div class="form-group">
+        <input type="email" name="email" class="form-control" placeholder="email address">
+    </div>
+    <div class="form-group">
+        <input type="password" name="password" class="form-control" placeholder="Password">
+    </div>
+    <button type="submit" href="#" class="btn">Login</button>
+</form>
+
+<a href="/user/register" class="btn-primary">Create a New Account</a>
 </body>
 </html>

@@ -1,11 +1,9 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Quiz;
-import com.example.itspacequizcommon.repository.QuestionRepository;
 import com.example.itspacequizcommon.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
 import java.util.List;

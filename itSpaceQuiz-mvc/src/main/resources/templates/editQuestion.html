@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit question</title>
+</head>
+<body>
+<form th:if="${quiz!=null}" action="/editQuestion" th:object="${question}" method="post">
+    <input th:if="${question != null}" type="hidden" th:value="${question.id}" name="id">
+    Title: <input type="text" name="title" th:value="${question == null} ? '' : ${question.title}"/> <br>
+    score:<input type="number" step="0.1" name="score" th:value="${question == null} ? '' : ${question.score}"/><br>
+    select type: <select id="select" onclick="display();" name="questionType" class="form-control">
+<!--    <option th:value="${question == null} ? '' : ${question.questionType.name()}">Select</option>-->
+    <option value="MULTI_SELECT">Multi select</option>
+    <option value="SINGLE_SELECT">Single select</option>
+</select><br><br>
+
+    <div id="demo" style="display: none;">
+
+        <label for="1">
+
+            <input type="${option1.title}" name="title1" th:value="${option1 == null} ? '' : ${option1.title}">
+            <input type="radio" id="1" name="title1">
+        </label><br>
+        <label for="2">
+
+            <input type="${option2.title}" name="title2" th:value="${option2 == null} ? '' : ${option2.title}">
+            <input type="radio" id="2" name="title2">
+        </label><br>
+        <label for="3">
+
+            <input type="${option3.title}" name="title3" th:value="${option3 == null} ? '' : ${option3.title}">
+            <input type="radio" id="3" name="title3">
+        </label> <br>
+        <label for="4">
+
+            <input type="${option4.title}" name="title4" th:value="${option4 == null} ? '' : ${option4.title}">
+            <input type="radio" id="4" name="title4">
+        </label>
+
+
+        <!--        <div th:if="${question.questionType.name()=='SINGLE_SELECT'}">-->
+        <!--        <div th:each="option:${options}">-->
+        <!--            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption ">-->
+
+        <!--                <label for="1">-->
+        <!--                    <input th:type="${option.id}" name="qOption" th:value="${option.title}">-->
+        <!--                    <input type="radio"  name="qOption" id="1" >-->
+        <!--                </label>-->
+
+        <!--        </div>-->
+        <!--        </div>-->
+    </div>
+
+    <div id="demo1" style="display: none;">
+
+        <label for="5">
+
+            <input type="${option1.title}" name="title1" th:value="${option1 == null} ? '' : ${option1.title}">
+            <input type="checkbox" id="5" name="title1" >
+        </label><br>
+        <label for="6">
+
+            <input type="${option2.title}" name="title2" th:value="${option2 == null} ? '' : ${option2.title}">
+            <input type="checkbox" id="6" name="title2" class="checkbox">
+        </label><br>
+        <label for="7">
+
+            <input type="${option3.title}" name="title3" th:value="${option3 == null} ? '' : ${option3.title}">
+            <input type="checkbox" id="7" name="title3">
+        </label> <br>
+        <label for="8">
+
+            <input type="${option4.title}" name="title4" th:value="${option4 == null} ? '' : ${option4.title}">
+            <input type="checkbox" id="8" name="title4">
+        </label>
+    </div>
+
+
+    <input type="hidden" th:value="${quiz.id}" name="quiz">
+    <input type="submit" value="save">
+
+</form>
+<script>
+    function display() {
+        var x = document.getElementById('select').value;
+        if (x == "MULTI_SELECT") {
+            document.getElementById('demo').style.display = "none";
+            document.getElementById('demo1').style.display = "block";
+        } else if (x == "SINGLE_SELECT") {
+
+            document.getElementById('demo').style.display = "block";
+            document.getElementById('demo1').style.display = "none";
+        }
+
+    }
+
+</script>
+<!--<script>-->
+<!--    const checkbox = document.querySelector(".checkbox");-->
+
+<!--    checkbox.addEventListener("change", function () {-->
+<!--        if (this.checked) {-->
+<!--            console.log("checked");-->
+<!--        } else {-->
+<!--            console.log("unchecked");-->
+<!--        }-->
+<!--    })-->
+<!--</script>-->
+
+
+</body>
+</html>

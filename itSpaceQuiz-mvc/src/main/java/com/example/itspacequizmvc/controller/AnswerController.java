@@ -1,6 +1,9 @@
 package com.example.itspacequizmvc.controller;
 
-import com.example.itspacequizcommon.entity.*;
+import com.example.itspacequizcommon.entity.Answer;
+import com.example.itspacequizcommon.entity.Question;
+import com.example.itspacequizcommon.entity.QuestionOption;
+import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.AnswerRepository;
 import com.example.itspacequizmvc.service.AnswerService;
 import com.example.itspacequizmvc.service.QuestionOptionService;
@@ -9,6 +12,7 @@ import com.example.itspacequizmvc.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,15 +32,14 @@ public class AnswerController {
 
 
     @PostMapping("/user/quiz/{id}")
-    public String answer(@PathVariable("id") int id,
+    public String answer(@PathVariable("id") int id,@ModelAttribute Answer answer,
                          @RequestParam("qOption") String[] titles, ModelMap map) {
         Quiz quiz = quizService.findById(id);
-        Answer answer = new Answer();
+//        Answer answer = new Answer();
 
         answer.setDateTime(LocalDateTime.now());
-        User user = new User(2, "poxos", "poxosyan",
-                "poxosyan@mail.ru", "poxos", UserType.valueOf("STUDENT"));
-        answer.setUser(user);
+//        User user = new User(2, "poxos", "poxosyan",
+//                "poxosyan@mail.ru", "poxos", UserType.valueOf("STUDENT"));
 
         QuestionOption update = questionOptionService.update(titles);
         answer.setQuestionOption(update);
@@ -44,7 +47,7 @@ public class AnswerController {
         answer.setQuestion(question);
         Question saveAndReturn = answerService.saveAndReturn(answer, quiz);
         List<Question> allQuestionsByQuiz = questionService.findAllByQuiz(quiz);
-        List<Answer> allByUser = answerRepository.findAllByUser(user);
+        List<Answer> allByUser = answerRepository.findAllByUser(answer.getUser());
         List<Answer> byQuiz = new ArrayList<>();
         for (Answer answer1 : allByUser) {
             if (answer1.getQuestion().getQuiz().getId() == quiz.getId()) {
@@ -53,20 +56,14 @@ public class AnswerController {
         }
         if (saveAndReturn == null) {
             map.addAttribute("result", answerService.result(byQuiz));
-            map.addAttribute("maxResult",answerService.maxResult(allQuestionsByQuiz));
+            map.addAttribute("maxResult", answerService.maxResult(allQuestionsByQuiz));
             return "result";
         }
         List<QuestionOption> allByQuestion = questionOptionService.findAllByQuestion(saveAndReturn);
-
-//        List<Question> questions = answerService.saveAndReturn(answer, quiz);
-//        map.addAttribute("questions",questions);
-
         map.addAttribute("question", saveAndReturn);
         map.addAttribute("quiz", quiz);
         map.addAttribute("options", allByQuestion);
-
-//        answerService.save(answer);
-
+        map.addAttribute("user",answer.getUser());
         return "answer";
     }
 

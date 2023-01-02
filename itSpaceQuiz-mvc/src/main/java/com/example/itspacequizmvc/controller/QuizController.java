@@ -1,8 +1,6 @@
 package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.Quiz;
-import com.example.itspacequizcommon.entity.User;
-import com.example.itspacequizcommon.entity.UserType;
 import com.example.itspacequizmvc.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

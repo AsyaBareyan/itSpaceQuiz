@@ -2,15 +2,16 @@ package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.Question;
 import com.example.itspacequizcommon.entity.QuestionOption;
-import com.example.itspacequizcommon.entity.QuestionType;
-import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizmvc.service.QuestionOptionService;
 import com.example.itspacequizmvc.service.QuestionService;
 import com.example.itspacequizmvc.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -27,8 +28,6 @@ public class QuestionOptionController {
             @RequestParam("questionOption") String[] titles) {
         questionOptionService.update(titles);
 
-
-
         return "redirect:/questions";
 
     }
@@ -37,7 +36,6 @@ public class QuestionOptionController {
     public String createQuestionOptionPage(ModelMap map, @PathVariable("id") int id) {
         Question question = questionService.findById(id);
         List<QuestionOption> options = questionOptionService.findAllByQuestion(question);
-//        if (question.getQuestionType() == QuestionType.SINGLE_SELECT)
         map.addAttribute("options", options);
         map.addAttribute("question", question);
         return "addQuestionOption";

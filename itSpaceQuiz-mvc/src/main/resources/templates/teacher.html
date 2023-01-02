@@ -5,7 +5,8 @@
     <title>Teacher</title>
 </head>
 <body>
-hello teacher<br>
+<a href="/logout">Logout</a><br>
+hello <span th:text="${currentUser.user.name}"></span> teacher<br>
 <a href="/quizCreate">create quiz</a><br>
 <a href="/quizzes">view all quizzes</a><br>
 

@@ -1,15 +1,12 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Question;
-import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -50,17 +47,6 @@ public class QuestionService {
         return questionRepository.findByQuiz(quiz);
     }
 
-//    public void saveOptions(Question question, String title) {
-//        QuestionOption questionOption = new QuestionOption();
-//
-////        for (String title : titles) {
-//            String[] split = title.split(",");
-//            questionOption.setTitle(split[0]);
-//            questionOption.setQuestion(question);
-//            if (split.length > 1) {
-//                questionOption.setCorrect(true);
-//            }
-//            questionOptionRepository.save(questionOption);
-//        }
+
     }
 

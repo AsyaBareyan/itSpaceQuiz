@@ -2,14 +2,12 @@ package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Answer;
 import com.example.itspacequizcommon.entity.Question;
-import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.AnswerRepository;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
 import java.util.List;
