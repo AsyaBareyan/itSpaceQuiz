@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "answer",schema = "public")
+@Table(name = "answer", schema = "public")
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +22,9 @@ public class Answer {
     private User user;
     @ManyToOne
     private Question question;
-    @ManyToOne
-    private QuestionOption questionOption;
+
+    @ManyToMany
+    private List<QuestionOption> questionOption;
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime dateTime;
 

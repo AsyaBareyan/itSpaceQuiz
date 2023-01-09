@@ -33,18 +33,14 @@ public class AnswerController {
 
     @PostMapping("/user/quiz/{id}")
     public String answer(@PathVariable("id") int id,@ModelAttribute Answer answer,
-                         @RequestParam("qOption") String[] titles, ModelMap map) {
+                         @RequestParam("qOption") List<Integer> options,
+                         ModelMap map) {
         Quiz quiz = quizService.findById(id);
-//        Answer answer = new Answer();
-
         answer.setDateTime(LocalDateTime.now());
-//        User user = new User(2, "poxos", "poxosyan",
-//                "poxosyan@mail.ru", "poxos", UserType.valueOf("STUDENT"));
 
-        QuestionOption update = questionOptionService.update(titles);
-        answer.setQuestionOption(update);
-        Question question = update.getQuestion();
-        answer.setQuestion(question);
+        List<QuestionOption> questionOptions = questionOptionService.addAnswerOptions(options);
+        answer.setQuestionOption(questionOptions);
+
         Question saveAndReturn = answerService.saveAndReturn(answer, quiz);
         List<Question> allQuestionsByQuiz = questionService.findAllByQuiz(quiz);
         List<Answer> allByUser = answerRepository.findAllByUser(answer.getUser());
@@ -66,8 +62,5 @@ public class AnswerController {
         map.addAttribute("user",answer.getUser());
         return "answer";
     }
-
-
-
 
 }

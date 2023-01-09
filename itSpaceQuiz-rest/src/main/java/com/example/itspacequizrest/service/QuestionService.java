@@ -1,6 +1,7 @@
 package com.example.itspacequizrest.service;
 
 import com.example.itspacequizcommon.entity.Question;
+import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuestionRepository;
 import com.example.itspacequizcommon.repository.QuizRepository;
 import com.example.itspacequizrest.dto.QuestionResponseDto;
@@ -39,11 +40,16 @@ public class QuestionService {
         }
     }
 
-    public QuestionResponseDto save(SaveQuestionRequest saveQuestionRequest) {
-        Question question = modelMapper.map(saveQuestionRequest, Question.class);
+//    public QuestionResponseDto save(SaveQuestionRequest saveQuestionRequest) {
+//        Question question = modelMapper.map(saveQuestionRequest, Question.class);
+//
+//        questionRepository.save(question);
+//        return modelMapper.map(question, QuestionResponseDto.class);
+//    }
+        public Question save(Question question) {
 
-        questionRepository.save(question);
-        return modelMapper.map(question, QuestionResponseDto.class);
+       return questionRepository.save(question);
+
     }
 
     public ResponseEntity update(int id, SaveQuestionRequest saveQuestionRequest) {
@@ -73,4 +79,8 @@ public class QuestionService {
         return questionRepository.getById(id);
     }
 
+    public List<Question> findAllByQuiz(Quiz quiz) {
+
+        return questionRepository.findAllByQuiz(quiz);
+    }
 }

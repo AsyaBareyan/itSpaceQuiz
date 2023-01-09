@@ -18,22 +18,22 @@
     <div th:if="${question.questionType.name()=='SINGLE_SELECT'}">
         <div th:each="option:${options}">
 
-            <input th:if="${option != null}" type="hidden" th:value="${option.id}" >
+<!--            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption">-->
 
             <label for="1">
                 <input type="radio" th:text="${option.title}" name="qOption" id="1"
-                       th:value="${option == null} ? '' : ${option.title}">
+                       th:value="${option == null} ? '' : ${option.id}">
             </label>
         </div>
     </div>
     <div th:if="${question.questionType.name()=='MULTI_SELECT'}">
         <div th:each="option:${options}">
 
-            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption ">
+<!--            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption">-->
 
             <label for="2">
                 <input type="checkbox" th:text="${option.title}" name="qOption" id="2"
-                       th:value="${option == null} ? '' : ${option.title}">
+                       th:value="${option == null} ? '' : ${option.id}">
             </label>
         </div>
     </div>

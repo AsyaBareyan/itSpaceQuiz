@@ -2,6 +2,7 @@ package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Answer;
 import com.example.itspacequizcommon.entity.Question;
+import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.AnswerRepository;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
@@ -30,19 +31,19 @@ public class AnswerService {
     public Question saveAndReturn(Answer answer, Quiz quiz) {
         Answer saveAnswer = answerRepository.save(answer);
         List<Question> allQuestionsByQuiz = questionRepository.findAllByQuiz(quiz);
-        List<Answer> allByUser = answerRepository.findAllByUser(saveAnswer.getUser());
-        List<Answer> byQuiz = new ArrayList<>();
-        for (Answer answer1 : allByUser) {
+        List<Answer> answers = answerRepository.findAllByUser(saveAnswer.getUser());
+        List<Answer> allAnswersByQuiz = new ArrayList<>();
+        for (Answer answer1 : answers) {
             if (answer1.getQuestion().getQuiz().getId() == quiz.getId()) {
-                byQuiz.add(answer1);
+                allAnswersByQuiz.add(answer1);
             }
         }
-        if (allQuestionsByQuiz.size() == byQuiz.size()) {
+        if (allQuestionsByQuiz.size() == allAnswersByQuiz.size()) {
 
             return null;
         }
 
-        for (Answer answer2 : byQuiz) {
+        for (Answer answer2 : allAnswersByQuiz) {
 
             allQuestionsByQuiz.remove(answer2.getQuestion());
 
@@ -54,19 +55,22 @@ public class AnswerService {
 
     public double result(List<Answer> answers) {
         double result = 0;
-        List<Answer> isTrue = checkIsTrue(answers);
-        if (isTrue.size() == answers.size()) {
+        for (Answer answer : answers) {
 
-            for (Answer answer : answers) {
+            List<QuestionOption> allByQuestion = questionOptionRepository.findAllByQuestion(answer.getQuestion());
+            List<QuestionOption> questionOptions = checkIsTrueOptions(allByQuestion);
+            List<QuestionOption> answerOptions = new ArrayList<>();
+            for (QuestionOption questionOption : answer.getQuestionOption()) {
+                if (questionOption.isCorrect()) {
+                    answerOptions.add(questionOption);
+                    if (questionOptions.size() == answerOptions.size()) {
+                        double score = answer.getQuestion().getScore();
 
-                if (answer.getQuestionOption().isCorrect()) {
-                    isTrue.add(answer);
-
-                    double score = answer.getQuestion().getScore();
-
-                    result = result + score;
+                        result = result + score;
+                    }
                 }
             }
+
         }
         return result;
     }
@@ -84,12 +88,12 @@ public class AnswerService {
     }
 
 
-    public List<Answer> checkIsTrue(List<Answer> answers) {
-        List<Answer> isTrue = new ArrayList<>();
-        for (Answer answer : answers) {
+    public List<QuestionOption> checkIsTrueOptions(List<QuestionOption> questionOptions) {
+        List<QuestionOption> isTrue = new ArrayList<>();
+        for (QuestionOption questionOption : questionOptions) {
 
-            if (answer.getQuestionOption().isCorrect()) {
-                isTrue.add(answer);
+            if (questionOption.isCorrect()) {
+                isTrue.add(questionOption);
 
             }
         }

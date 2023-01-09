@@ -8,8 +8,10 @@ import com.example.itspacequizcommon.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,18 +22,32 @@ public class QuestionOptionService {
 
 
     public QuestionOption save(QuestionOption questionOption) {
+
         return questionOptionRepository.save(questionOption);
     }
 
 
-    public QuestionOption update(String[] titles) {
-        for (String title : titles) {
+//    public QuestionOption update(String[] titles) {
+//        for (String title : titles) {
+//
+//            QuestionOption questionOptionByTitle = questionOptionRepository.findQuestionOptionByTitle(title);
+//            return questionOptionRepository.save(questionOptionByTitle);
+//
+//        }
+//        return null;
+//    }
 
-            QuestionOption questionOptionByTitle = questionOptionRepository.findQuestionOptionByTitle(title);
-            return questionOptionRepository.save(questionOptionByTitle);
-
+    public List<QuestionOption> addAnswerOptions(List<Integer> options) {
+//        int[] values = Arrays.stream(titles)
+//                .mapToInt(Integer::parseInt)
+//                .toArray();
+        List<QuestionOption> questionOptions = new ArrayList<>();
+        for (int option : options) {
+            QuestionOption byId = questionOptionRepository.getById(option);
+//            QuestionOption save = questionOptionRepository.save(byId);
+            questionOptions.add(byId);
         }
-        return null;
+        return questionOptions;
     }
 
     public QuestionOption changeOption(List<QuestionOption> questionOptions) {
@@ -58,6 +74,7 @@ public class QuestionOptionService {
         questionOptionRepository.save(questionOption);
 
     }
+
 
     public void editOptions(Question question, QuestionOption questionOption, String title) {
 

@@ -5,6 +5,8 @@ import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,7 +43,10 @@ public class QuestionService {
 
         return questionRepository.findAllByQuiz(quiz);
     }
+    public Page<Question> findAll(Pageable pageable) {
 
+        return questionRepository.findAll(pageable);
+    }
 
     public Question findByQuiz(Quiz quiz){
         return questionRepository.findByQuiz(quiz);

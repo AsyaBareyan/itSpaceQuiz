@@ -102,9 +102,7 @@
     </column>
     <column name="question_id" type="int">
         <constraints nullable="false"/>    </column>
-    <column name="question_option_id" type="int">
-        <constraints nullable="false"/>
-    </column>
+
     <column name="date_time" type="datetime">
         <constraints nullable="false"/>
     </column>
@@ -123,13 +121,33 @@
                          referencedColumnNames="id"
                          onDelete="CASCADE"
                          onUpdate="CASCADE"/>
-        <addForeignKeyConstraint baseTableName="answer"
+
+
+</changeSet> <changeSet id="addAnswerOptionTable" author="AsyaBareyan">
+<createTable tableName="answer_question_option">
+    <column name="question_option_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+    <column name="answer_id" type="int">
+        <constraints nullable="false"/>
+    </column>
+
+</createTable>
+<addForeignKeyConstraint baseTableName="answer_question_option"
                          baseColumnNames="question_option_id"
-                         constraintName="questionOption_fk"
+                         constraintName="question_option_fk"
                          referencedTableName="question_option"
                          referencedColumnNames="id"
                          onDelete="CASCADE"
                          onUpdate="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="answer_question_option"
+                         baseColumnNames="answer_id"
+                         constraintName="answer_fk"
+                         referencedTableName="answer"
+                         referencedColumnNames="id"
+                         onDelete="CASCADE"
+                         onUpdate="CASCADE"/>
+
 
 </changeSet>
 

@@ -7,11 +7,16 @@ import com.example.itspacequizmvc.service.QuestionOptionService;
 import com.example.itspacequizmvc.service.QuestionService;
 import com.example.itspacequizmvc.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,10 +26,19 @@ public class QuestionController {
 
     private final QuestionOptionService questionOptionService;
 
-    @GetMapping("/questions")
-    public String questionsPage(ModelMap map) {
-        List<Question> questions = questionService.getAllQuestions();
+    @GetMapping("/questions/")
+    public String questionsPage(ModelMap map,@RequestParam(value = "page", defaultValue = "0") int page,
+                                @RequestParam(value = "size", defaultValue = "2") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("title"));
+        Page<Question> questions = questionService.findAll(pageRequest);
         map.addAttribute("questions", questions);
+        int totalPages = questions.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            map.addAttribute("pageNumbers", pageNumbers);
+        }
         return "questions";
     }
 

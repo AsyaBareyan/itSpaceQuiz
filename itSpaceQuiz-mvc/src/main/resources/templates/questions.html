@@ -4,8 +4,26 @@
     <meta charset="UTF-8">
     <title>Questions</title>
 </head>
-<body>
 
+<style>
+    .pagination {
+        display: inline-block;
+    }
+
+    .pagination a {
+        color: black;
+        float: left;
+        padding: 5px 5px;
+        text-decoration: none;
+    }
+
+    .pagination a.active {
+        background-color: gray;
+        color: white;
+        border-radius: 2px;
+    }
+</style>
+<body>
 <table border="1">
     <tr>
         <th>id</th>
@@ -14,7 +32,7 @@
         <th>score</th>
         <th>quiz</th>
 
-        <th th:if="${question != null}">action</th>
+        <th>action</th>
     </tr>
 
     <tr th:each="question:${questions}">
@@ -28,5 +46,11 @@
     </tr>
 
 </table>
+<div th:if="${questions.totalPages > 0}" class="pagination"
+     th:each="pageNumber : ${pageNumbers}">
+    <a th:href="@{/questions/(size=${questions.size}, page=${pageNumber - 1})}"
+       th:text="${pageNumber}"
+       th:class="${pageNumber==questions.number + 1} ? active"></a>
+</div>
 </body>
 </html>

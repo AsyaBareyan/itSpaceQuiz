@@ -2,14 +2,18 @@ package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizmvc.service.QuizService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -25,10 +29,20 @@ public class QuizController {
     }
 
     @PostMapping("/quiz")
-    public String createQuiz(@ModelAttribute Quiz quiz,ModelMap map) {
-        quizService.save(quiz);
-        return "redirect:/quizzes";
+    public String createQuiz(@Valid @ModelAttribute Quiz quiz,
+                             BindingResult bindingResult, ModelMap map) {
+        if (bindingResult.hasErrors()) {
+            List<String> errors = new ArrayList<>();
+            for (ObjectError allError : bindingResult.getAllErrors()) {
+                errors.add(allError.getDefaultMessage());
+            }
+            map.addAttribute("errors", errors);
+            return ("saveQuiz");
+        } else {
+            quizService.save(quiz);
+            return "redirect:/quizzes";
 
+        }
     }
 
 

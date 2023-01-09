@@ -2,6 +2,8 @@ package com.example.itspacequizcommon.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,8 @@ public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotEmpty(message = "title should be not empty")
+    @NotNull()
     private String title;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdDateTime;

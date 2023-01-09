@@ -23,14 +23,14 @@ public class QuestionOptionController {
     private final QuestionService questionService;
 
 
-    @PostMapping("/questionOption")
-    public String createQuestionOption(
-            @RequestParam("questionOption") String[] titles) {
-        questionOptionService.update(titles);
-
-        return "redirect:/questions";
-
-    }
+//    @PostMapping("/questionOption")
+//    public String createQuestionOption(
+//            @RequestParam("questionOption") String[] titles) {
+//        questionOptionService.update(titles);
+//
+//        return "redirect:/questions";
+//
+//    }
 
     @GetMapping("/questionOption/byQuestion/{id}")
     public String createQuestionOptionPage(ModelMap map, @PathVariable("id") int id) {

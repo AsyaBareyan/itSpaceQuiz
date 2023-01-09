@@ -6,8 +6,10 @@ import com.example.itspacequizrest.dto.UserResponseDto;
 import com.example.itspacequizrest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -18,8 +20,12 @@ public class UserController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/user")
-    public UserResponseDto saveUser(@RequestBody SaveUserRequest saveUserRequest) {
-        return userService.save(saveUserRequest);
+    public ResponseEntity<UserResponseDto> saveUser( @RequestBody SaveUserRequest saveUserRequest) {
+        if(userService.findByEmail(saveUserRequest.getEmail()).isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        UserResponseDto save = userService.save(saveUserRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(save);
 
     }
 
