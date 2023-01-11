@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface AnswerRepository extends JpaRepository<Answer,Integer> {
 List<Answer> findAllByUser(User user);
+Answer findByQuestion(Question question);
 
 
 

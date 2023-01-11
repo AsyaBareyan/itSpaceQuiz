@@ -1,4 +1,4 @@
-package com.example.itspacequizmvc.service;
+package com.example.itspacequizrest.service;
 
 import com.example.itspacequizcommon.entity.Answer;
 import com.example.itspacequizcommon.entity.Question;
@@ -7,9 +7,13 @@ import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.AnswerRepository;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
+import com.example.itspacequizrest.dto.SaveAnswerRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,30 +24,26 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final QuestionOptionRepository questionOptionRepository;
 
-    public Answer save(Answer answer) {
-
-
-        return answerRepository.save(answer);
-
-
-    }
+    private final ModelMapper modelMapper;
 
     public Question saveAndReturn(Answer answer, Quiz quiz) {
+
         Answer saveAnswer = answerRepository.save(answer);
         List<Question> allQuestionsByQuiz = questionRepository.findAllByQuiz(quiz);
-        List<Answer> answers = answerRepository.findAllByUser(saveAnswer.getUser());
-        List<Answer> allAnswersByQuiz = new ArrayList<>();
-        for (Answer answer1 : answers) {
+        List<Answer> allByUser = answerRepository.findAllByUser(saveAnswer.getUser());
+        List<Answer> byQuiz = new ArrayList<>();
+        for (Answer answer1 : allByUser) {
             if (answer1.getQuestion().getQuiz().getId() == quiz.getId()) {
-                allAnswersByQuiz.add(answer1);
+                byQuiz.add(answer1);
             }
         }
-        if (allQuestionsByQuiz.size() == allAnswersByQuiz.size()) {
+        if (allQuestionsByQuiz.size() == byQuiz.size()) {
 
-            return null;
+          return null;
+
         }
 
-        for (Answer answer2 : allAnswersByQuiz) {
+        for (Answer answer2 : byQuiz) {
 
             allQuestionsByQuiz.remove(answer2.getQuestion());
 
@@ -51,7 +51,6 @@ public class AnswerService {
 
         return allQuestionsByQuiz.get(0);
     }
-
 
     public double result(List<Answer> answers) {
         double result = 0;
@@ -96,5 +95,10 @@ public class AnswerService {
             }
         }
         return isTrue;
+    }
+
+
+    public Answer findByQuestion(Question question) {
+        return answerRepository.findByQuestion(question);
     }
 }

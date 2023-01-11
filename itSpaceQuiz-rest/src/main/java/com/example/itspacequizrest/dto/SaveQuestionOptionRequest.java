@@ -5,17 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionResponseDto {
-    private int id;
-    private String title;
-    private Double score;
-    private QuestionType questionType;
-    private List<Integer> questionOptions;
-
+public class SaveQuestionOptionRequest {
+    private String[] titles;
+    private boolean isCorrect;
+    private int questionId;
 
 }
