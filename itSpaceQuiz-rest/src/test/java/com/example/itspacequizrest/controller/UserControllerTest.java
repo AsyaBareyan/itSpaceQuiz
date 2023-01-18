@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource("/application.properties")
+@TestPropertySource("/application-test.properties")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = WebApplicationContext.class)
 class UserControllerTest {
     @Autowired
     private WebApplicationContext wac;

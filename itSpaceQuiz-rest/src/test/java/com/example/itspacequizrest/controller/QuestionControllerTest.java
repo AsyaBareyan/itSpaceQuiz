@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@TestPropertySource("/application.properties")
+@TestPropertySource("/application-test.properties")
 class QuestionControllerTest {
     @Autowired
     private WebApplicationContext wac;
