@@ -15,7 +15,7 @@ public class QuestionResponseDto {
     private String title;
     private Double score;
     private QuestionType questionType;
-    private List<Integer> questionOptions;
+//    private List<OptionsDto> questionOptions;
 
 
 }

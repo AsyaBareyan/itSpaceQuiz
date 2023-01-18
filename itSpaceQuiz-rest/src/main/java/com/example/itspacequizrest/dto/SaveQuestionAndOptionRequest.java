@@ -22,6 +22,5 @@ public class SaveQuestionAndOptionRequest {
     private String title2;
     private String title3;
     private String title4;
-    //karox em ardyoq urish dzev quizid-n vercnel?
 
 }

@@ -5,6 +5,7 @@ import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuestionRepository;
 import com.example.itspacequizcommon.repository.QuizRepository;
 import com.example.itspacequizrest.dto.QuestionResponseDto;
+import com.example.itspacequizrest.dto.SaveQuestionAndOptionRequest;
 import com.example.itspacequizrest.dto.SaveQuestionRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -52,7 +53,7 @@ public class QuestionService {
 
     }
 
-    public ResponseEntity update(int id, SaveQuestionRequest saveQuestionRequest) {
+    public ResponseEntity update(int id, SaveQuestionAndOptionRequest saveQuestionRequest) {
         Optional<Question> question = questionRepository.findById(id);
         if (!question.isPresent()) {
             return ResponseEntity.notFound().build();

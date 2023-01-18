@@ -5,7 +5,6 @@ import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.QuestionType;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
-import com.example.itspacequizrest.dto.SaveQuestionRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,7 @@ import java.util.List;
 public class QuestionOptionService {
 
     private final QuestionOptionRepository questionOptionRepository;
-    private final QuestionRepository questionRepository;
-    private final ModelMapper modelMapper;
+
 
 
     public QuestionOption save(QuestionOption questionOption) {
@@ -69,7 +67,7 @@ public class QuestionOptionService {
         if (question.getQuestionType() == QuestionType.SINGLE_SELECT) {
             questionOption.setTitle(split[0]);
         } else {
-            questionOption.setTitle(split[1]);
+            questionOption.setTitle(split[0]);
         }
         questionOption.setQuestion(question);
         if (!Arrays.asList(split).contains("on")) {

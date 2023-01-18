@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -23,19 +21,19 @@ public class UserService {
         return userRepository.save(user);
 
     }
-    public boolean checkIfStudentIsNull(int id) {
-        Optional<User> student = userRepository.findById(id);
-        if (student.isPresent()) {
-            return true;
-        }
-        return false;
-    }
+//    public boolean checkIfStudentIsNull(int id) {
+//        Optional<User> student = userRepository.findById(id);
+//        if (student.isPresent()) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     public User findById(int id) {
         return userRepository.getById(id);
     }
 
-    public Optional<User> findByEmailAddress(String email) {
-        return userRepository.findByEmail(email);
-    }
+//    public Optional<User> findByEmailAddress(String email) {
+//        return userRepository.findByEmail(email);
+//    }
 }

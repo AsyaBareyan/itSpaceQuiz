@@ -29,24 +29,24 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/user/{id}")
-    public ResponseEntity deleteById(@PathVariable("id") int id) {
-        return userService.deleteById(id);
-
-
-    }
-
-    @GetMapping("/user/{id}")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") int id) {
-        return userService.getById(id);
-
-
-    }
-
-    @GetMapping("/user")
-    public List<UserResponseDto> getUsers() {
-        return userService.findAll();
-    }
+//    @DeleteMapping("/user/{id}")
+//    public ResponseEntity deleteById(@PathVariable("id") int id) {
+//        return userService.deleteById(id);
+//
+//
+//    }
+//
+//    @GetMapping("/user/{id}")
+//    public ResponseEntity<UserResponseDto> getUserById(@PathVariable("id") int id) {
+//        return userService.getById(id);
+//
+//
+//    }
+//
+//    @GetMapping("/user")
+//    public List<UserResponseDto> getUsers() {
+//        return userService.findAll();
+//    }
 
 
 }

@@ -1,33 +1,28 @@
 package com.example.itspacequizrest.controller;
 
-import com.example.itspacequizrest.dto.SaveUserRequest;
+import com.example.itspacequizcommon.repository.UserRepository;
 import com.example.itspacequizrest.service.UserService;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource("/application-test.properties")
+@TestPropertySource("/application.properties")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class UserControllerTest {
@@ -36,17 +31,17 @@ class UserControllerTest {
 
     private MockMvc mvc;
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        userRepository.deleteAll();
     }
-
-    @MockBean
-    UserService userService;
-    //    @MockBean
-//    UserController userController;
-
-    ObjectMapper objectMapper;
 
 
     @AfterEach
@@ -54,15 +49,16 @@ class UserControllerTest {
     }
 
     @Test
-    void saveUser() throws Exception {
+    public void saveUser() throws Exception {
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
+
         objectNode.put("name", "As");
         objectNode.put("surname", "Bar");
         objectNode.put("email", "as@mail.com");
         objectNode.put("password", "bar");
 
 
-        mvc.perform(post("http://localhost:8083/user")
+        mvc.perform(MockMvcRequestBuilders.post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectNode.toString()))
                 .andExpect(status().is2xxSuccessful());
@@ -70,41 +66,19 @@ class UserControllerTest {
 
     }
 
-//    @Test
-//    public void testSaveUser() throws Exception {
-//        SaveUserRequest saveUserRequest = new SaveUserRequest();
-//
-//        saveUserRequest.setName("Asya");
-//        saveUserRequest.setSurname("Bareyan");
-//        saveUserRequest.setEmail("Asya@mail.ru");
-//        saveUserRequest.setPassword("bar");
-//
-//        String jsonRequest = objectMapper.writeValueAsString(saveUserRequest);
-//
-//        mvc.perform(post("/user")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(jsonRequest))
-//                .andExpect(status().isCreated())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.id").exists())
-//                .andExpect(jsonPath("$.email").value(saveUserRequest.getEmail()))
-//                .andExpect(jsonPath("$.firstName").value(saveUserRequest.getName()))
-//                .andExpect(jsonPath("$.lastName").value(saveUserRequest.getSurname()));
-//    }
-
     @Test
     void saveUser_EmailDuplicate() throws Exception {
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
-        objectNode.put("name", "poxosik");
-        objectNode.put("surname", "poxosyan");
-        objectNode.put("password", "poxos");
-        objectNode.put("email", "poxosik@mail.com");
+        objectNode.put("name", "as");
+        objectNode.put("surname", "bareyan");
+        objectNode.put("password", "bar");
+        objectNode.put("email", "as@mail.com");
 
-//        mvc.perform(post("http://localhost:8083/user")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectNode.toString()))
-//                .andExpect(status().isOk());
-
+        mvc.perform(post("http://localhost:8083/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectNode.toString()))
+                .andExpect(status().is2xxSuccessful());
+        assertTrue(userService.findByEmail("as@mail.com").isPresent());
         mvc.perform(post("http://localhost:8083/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectNode.toString()))
@@ -112,11 +86,4 @@ class UserControllerTest {
 
     }
 
-    @Test
-    void deleteById() {
-    }
-
-    @Test
-    void getUserById() {
-    }
 }

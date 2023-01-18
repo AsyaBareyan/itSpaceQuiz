@@ -49,19 +49,19 @@ public class QuizService {
     }
 
     public ResponseEntity update(int id, SaveQuizRequest saveQuizRequest) {
-            Optional<Quiz> quiz = quizRepository.findById(id);
-            if (!quiz.isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
-            Quiz byId = quiz.get();
-            byId.setCreatedDateTime(LocalDateTime.now());
-            if (saveQuizRequest.getTitle() != null) {
-                byId.setTitle(saveQuizRequest.getTitle());
-            }
-
-            quizRepository.save(byId);
-
-            return ResponseEntity.ok(quiz);
+        Optional<Quiz> quiz = quizRepository.findById(id);
+        if (!quiz.isPresent()) {
+            return ResponseEntity.notFound().build();
         }
+        Quiz byId = quiz.get();
+        byId.setCreatedDateTime(LocalDateTime.now());
+        if (saveQuizRequest.getTitle() != null) {
+            byId.setTitle(saveQuizRequest.getTitle());
+        }
+
+        quizRepository.save(byId);
+
+        return ResponseEntity.ok(quiz);
     }
+}
 

@@ -19,6 +19,6 @@ public class SaveQuestionRequest {
     private Double score;
     private QuestionType questionType;
     private int quizId;
-    //karox em ardyoq urish dzev quizid-n vercnel?
+
 
 }

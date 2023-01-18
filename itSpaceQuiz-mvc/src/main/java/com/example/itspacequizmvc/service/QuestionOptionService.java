@@ -4,47 +4,26 @@ import com.example.itspacequizcommon.entity.Question;
 import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.QuestionType;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
-import com.example.itspacequizcommon.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionOptionService {
 
     private final QuestionOptionRepository questionOptionRepository;
-    private final QuestionRepository questionRepository;
 
 
-    public QuestionOption save(QuestionOption questionOption) {
-
-        return questionOptionRepository.save(questionOption);
-    }
-
-
-//    public QuestionOption update(String[] titles) {
-//        for (String title : titles) {
-//
-//            QuestionOption questionOptionByTitle = questionOptionRepository.findQuestionOptionByTitle(title);
-//            return questionOptionRepository.save(questionOptionByTitle);
-//
-//        }
-//        return null;
-//    }
 
     public List<QuestionOption> addAnswerOptions(List<Integer> options) {
-//        int[] values = Arrays.stream(titles)
-//                .mapToInt(Integer::parseInt)
-//                .toArray();
+
         List<QuestionOption> questionOptions = new ArrayList<>();
         for (int option : options) {
             QuestionOption byId = questionOptionRepository.getById(option);
-//            QuestionOption save = questionOptionRepository.save(byId);
             questionOptions.add(byId);
         }
         return questionOptions;
@@ -110,5 +89,4 @@ public class QuestionOptionService {
     }
 
 
-//    public List<QuestionOption> addOption()
 }

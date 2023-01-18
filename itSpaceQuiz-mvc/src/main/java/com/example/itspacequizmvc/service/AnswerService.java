@@ -31,6 +31,8 @@ public class AnswerService {
     public Question saveAndReturn(Answer answer, Quiz quiz) {
         Answer saveAnswer = answerRepository.save(answer);
         List<Question> allQuestionsByQuiz = questionRepository.findAllByQuiz(quiz);
+        List<Question> remainingQuestions = new ArrayList<>(allQuestionsByQuiz);
+
         List<Answer> answers = answerRepository.findAllByUser(saveAnswer.getUser());
         List<Answer> allAnswersByQuiz = new ArrayList<>();
         for (Answer answer1 : answers) {
@@ -45,11 +47,11 @@ public class AnswerService {
 
         for (Answer answer2 : allAnswersByQuiz) {
 
-            allQuestionsByQuiz.remove(answer2.getQuestion());
+            remainingQuestions.remove(answer2.getQuestion());
 
         }
 
-        return allQuestionsByQuiz.get(0);
+        return remainingQuestions.get(0);
     }
 
 

@@ -7,13 +7,10 @@ import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.AnswerRepository;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
 import com.example.itspacequizcommon.repository.QuestionRepository;
-import com.example.itspacequizrest.dto.SaveAnswerRequest;
+import com.example.itspacequizrest.dto.ResultDto;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +21,8 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final QuestionOptionRepository questionOptionRepository;
 
-    private final ModelMapper modelMapper;
 
-    public Question saveAndReturn(Answer answer, Quiz quiz) {
+    public ResultDto saveAndReturn(Answer answer, Quiz quiz) {
 
         Answer saveAnswer = answerRepository.save(answer);
         List<Question> allQuestionsByQuiz = questionRepository.findAllByQuiz(quiz);
@@ -37,9 +33,11 @@ public class AnswerService {
                 byQuiz.add(answer1);
             }
         }
+        ResultDto resultDto = new ResultDto();
         if (allQuestionsByQuiz.size() == byQuiz.size()) {
-
-          return null;
+            resultDto.setResult(result(byQuiz));
+            resultDto.setMaxResult(maxResult(allQuestionsByQuiz));
+            return resultDto;
 
         }
 
@@ -48,8 +46,9 @@ public class AnswerService {
             allQuestionsByQuiz.remove(answer2.getQuestion());
 
         }
-
-        return allQuestionsByQuiz.get(0);
+        resultDto.setQuestion(allQuestionsByQuiz.get(0));
+        return resultDto;
+//        return allQuestionsByQuiz.get(0);
     }
 
     public double result(List<Answer> answers) {

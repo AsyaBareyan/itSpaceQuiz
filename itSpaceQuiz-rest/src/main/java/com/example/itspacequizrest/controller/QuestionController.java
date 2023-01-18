@@ -24,22 +24,10 @@ public class QuestionController {
 
 
     @GetMapping("/question")
-    public List<QuestionResponseDto> getAllQuestions() {
-
-        return questionService.findAll();
+    public ResponseEntity<List<QuestionResponseDto>> getAllQuestions() {
+        List<QuestionResponseDto> all = questionService.findAll();
+        return ResponseEntity.ok(all);
     }
-
-//    @GetMapping("/question/quiz/{id}")
-//    public ResponseEntity<List<QuestionOption>> responseAllQuestionsByQuiz(@PathVariable("id") int id) {
-//        List<Question> allByQuiz = questionService.findAllByQuiz(quizService.getById(id));
-//        for (Question question : allByQuiz) {
-//            List<QuestionOption> allByQuestion = questionOptionService.findAllByQuestion(question);
-//
-//            return ResponseEntity.ok(allByQuestion);
-//        }
-////
-//        return ResponseEntity.noContent().build();
-//    }
 
 
     @GetMapping("/question/quiz/{id}")
@@ -49,10 +37,10 @@ public class QuestionController {
 
         for (Question question : allByQuiz) {
             questionOptionResponseDto.setQuestion(question);
-            List<OptionsDto> optionsDtos=new ArrayList<>();
+            List<OptionsDto> optionsDtos = new ArrayList<>();
             List<QuestionOption> allByQuestion = questionOptionService.findAllByQuestion(question);
             for (QuestionOption questionOption : allByQuestion) {
-                optionsDtos.add(modelMapper.map(questionOption,OptionsDto.class));
+                optionsDtos.add(modelMapper.map(questionOption, OptionsDto.class));
             }
 
             questionOptionResponseDto.setOptions(optionsDtos);
@@ -89,10 +77,18 @@ public class QuestionController {
 
     @PutMapping("/question/{id}")
     public ResponseEntity editQuestion(@PathVariable("id") int id,
-                                       @RequestBody SaveQuestionRequest saveQuestionRequest) {
-        return questionService.update(id, saveQuestionRequest);
+                                       @RequestBody SaveQuestionAndOptionRequest saveQuestionAndOptionRequest) {
+        questionService.update(id, saveQuestionAndOptionRequest);
+        Question question = modelMapper.map(saveQuestionAndOptionRequest, Question.class);
+        List<QuestionOption> allByQuestion = questionOptionService.findAllByQuestion(question);
+        questionOptionService.editOptions(question, allByQuestion.get(0), saveQuestionAndOptionRequest.getTitle1());
+        questionOptionService.editOptions(question, allByQuestion.get(1), saveQuestionAndOptionRequest.getTitle2());
+        questionOptionService.editOptions(question, allByQuestion.get(2), saveQuestionAndOptionRequest.getTitle3());
+        questionOptionService.editOptions(question, allByQuestion.get(3), saveQuestionAndOptionRequest.getTitle4());
 
+        questionOptionService.changeOption(allByQuestion);
 
+        return ResponseEntity.ok().build();
     }
 }
 
