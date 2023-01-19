@@ -47,11 +47,11 @@ public class QuestionOptionService {
         QuestionOption questionOption = new QuestionOption();
 
         String[] split = title.split(",");
-        if (question.getQuestionType() == QuestionType.SINGLE_SELECT) {
+//        if (question.getQuestionType() == QuestionType.SINGLE_SELECT) {
             questionOption.setTitle(split[0]);
-        } else {
-            questionOption.setTitle(split[1]);
-        }
+//        } else {
+//            questionOption.setTitle(split[1]);
+//        }
         questionOption.setQuestion(question);
         if (Arrays.asList(split).contains("on")) {
             questionOption.setCorrect(true);

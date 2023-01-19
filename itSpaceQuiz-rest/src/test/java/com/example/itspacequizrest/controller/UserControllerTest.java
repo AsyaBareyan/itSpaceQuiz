@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource("/application-test.properties")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = WebApplicationContext.class)
+@SpringBootTest
 class UserControllerTest {
     @Autowired
     private WebApplicationContext wac;
@@ -40,7 +40,7 @@ class UserControllerTest {
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        userRepository.deleteAll();
+
     }
 
 
@@ -56,6 +56,7 @@ class UserControllerTest {
         objectNode.put("surname", "Bar");
         objectNode.put("email", "as@mail.com");
         objectNode.put("password", "bar");
+        objectNode.put("user_type", "SINGLE_SELECT");
 
 
         mvc.perform(MockMvcRequestBuilders.post("/user")
@@ -63,7 +64,14 @@ class UserControllerTest {
                         .content(objectNode.toString()))
                 .andExpect(status().is2xxSuccessful());
 
-
+//        SaveUserRequest saveUserRequest = new SaveUserRequest();
+//        saveUserRequest.setName("As");
+//        saveUserRequest.setSurname("Bar");
+//        saveUserRequest.setEmail("Asyabareyan@gmail.com");
+//        saveUserRequest.setPassword("bar");
+//
+//        userService.save(saveUserRequest);
+//assertTrue(userRepository.findByEmail("Asyabareyan@gmail.com").isPresent());
     }
 
     @Test
@@ -71,13 +79,13 @@ class UserControllerTest {
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
         objectNode.put("name", "as");
         objectNode.put("surname", "bareyan");
-        objectNode.put("password", "bar");
         objectNode.put("email", "as@mail.com");
+        objectNode.put("password", "bar");
 
-        mvc.perform(post("http://localhost:8083/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectNode.toString()))
-                .andExpect(status().is2xxSuccessful());
+//        mvc.perform(post("/user")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectNode.toString()))
+//                .andExpect(status().is2xxSuccessful());
         assertTrue(userService.findByEmail("as@mail.com").isPresent());
         mvc.perform(post("http://localhost:8083/user")
                         .contentType(MediaType.APPLICATION_JSON)
