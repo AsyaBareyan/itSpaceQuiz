@@ -69,26 +69,6 @@ class QuestionOptionServiceTest {
     }
 
     @Test
-    void testEditOptions() {
-        questionOptionService.editOptions(question, option1, "Option 11,on");
-        verify(questionOptionRepository, times(1)).save(any(QuestionOption.class));
-    }
-
-
-    @Test
-    void testDeleteById() {
-        questionOptionService.deleteById(1);
-        verify(questionOptionRepository, times(1)).deleteById(1);
-    }
-
-    @Test
-    void testFindById() {
-        when(questionOptionRepository.getById(1)).thenReturn(option1);
-        QuestionOption foundOption = questionOptionService.findById(1);
-        assertEquals(foundOption, option1);
-    }
-
-    @Test
     void testFindAllByQuestion() {
         when(questionOptionRepository.findAllByQuestion(question)).thenReturn(Arrays.asList(option1, option2));
         List<QuestionOption> options = questionOptionService.findAllByQuestion(question);

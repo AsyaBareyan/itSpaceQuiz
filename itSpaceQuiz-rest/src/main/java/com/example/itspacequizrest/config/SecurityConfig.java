@@ -40,16 +40,17 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and();
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/user/auth").permitAll()
-                .requestMatchers(HttpMethod.POST,"/user").permitAll()
-                .requestMatchers(HttpMethod.DELETE,"/quiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
-                .requestMatchers(HttpMethod.POST,"/quiz").hasAnyAuthority((UserType.TEACHER.name()))
-                .requestMatchers(HttpMethod.PUT,"/quiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
-                .requestMatchers(HttpMethod.PUT,"/question/{id}").hasAnyAuthority((UserType.TEACHER.name()))
-                .requestMatchers(HttpMethod.POST,"/question").hasAnyAuthority((UserType.TEACHER.name()))
-                .requestMatchers(HttpMethod.DELETE,"/question/{id}").hasAnyAuthority((UserType.TEACHER.name()))
-                .anyRequest().authenticated())
-                        .httpBasic();
+                        .requestMatchers("/user/auth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/quiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.POST, "/quiz").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.PUT, "/quiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.PUT, "/question/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.POST, "/question").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.DELETE, "/question/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                        .requestMatchers(HttpMethod.POST, "/answer/quiz/{id}").hasAnyAuthority((UserType.STUDENT.name()))
+                        .anyRequest().authenticated())
+                .httpBasic();
 
 
         http.addFilterBefore(authenticationTokenFilterBean(),

@@ -44,6 +44,15 @@ public class SecurityConfig {
                       .requestMatchers( "/successLogin").hasAnyAuthority(UserType.TEACHER.name(), UserType.STUDENT.name(
                         ))
                       .requestMatchers("/user").hasAnyAuthority((UserType.STUDENT.name()))
+                      .requestMatchers("/deleteQuiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.GET,"/quizCreate").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers("/editQuiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.POST,"/quiz").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers("/deleteQuestion/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.GET,"/editQuestion/{id}").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.POST,"/editQuestion").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.POST,"/question").hasAnyAuthority((UserType.TEACHER.name()))
+                      .requestMatchers(HttpMethod.GET,"/questions/byQuiz/{id}").hasAnyAuthority((UserType.TEACHER.name()))
                       .anyRequest().authenticated());
 
 //               http .authorizeRequests()

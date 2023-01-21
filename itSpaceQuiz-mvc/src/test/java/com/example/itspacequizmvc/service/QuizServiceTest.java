@@ -2,36 +2,43 @@ package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuizRepository;
+import com.example.itspacequizmvc.exception.NotFoundException;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestPropertySource("/application-test.properties")
+
 class QuizServiceTest {
 
-    @Mock
+    @Autowired
     private QuizRepository quizRepository;
 
-    @InjectMocks
+    @Autowired
     private QuizService quizService;
 
+    @Order(2)
     @Test
     void getAllQuizzes() {
         Quiz quiz1 = Quiz.builder().id(1).title("Quiz 1").build();
         Quiz quiz2 = Quiz.builder().id(2).title("Quiz 2").build();
-        when(quizRepository.findAll()).thenReturn(Arrays.asList(quiz1, quiz2));
+//        quizRepository.findAll();
+        quizRepository.save(quiz1);
+        quizRepository.save(quiz2);
 
         List<Quiz> quizzes = quizService.getAllQuizzes();
 
@@ -41,10 +48,11 @@ class QuizServiceTest {
     }
 
     @Test
+    @Order(1)
     void save() {
         Quiz quiz = Quiz.builder().id(1).title("Quiz 1")
                 .createdDateTime(LocalDateTime.now()).build();
-        when(quizRepository.save(quiz)).thenReturn(quiz);
+        quizRepository.save(quiz);
 
         Quiz savedQuiz = quizService.save(quiz);
 
@@ -52,19 +60,32 @@ class QuizServiceTest {
 
     }
 
+    @Order(4)
     @Test
     void deleteById() {
-        quizService.deleteById(1);
-        verify(quizRepository).deleteById(1);
+        Quiz quiz = Quiz.builder().id(1).title("Quiz 1")
+                .createdDateTime(LocalDateTime.now()).build();
+        quizRepository.save(quiz);
+        int id = quiz.getId();
+        assertTrue(quizRepository.findById(id).isPresent());
+        quizService.deleteById(id);
+        assertTrue(quizRepository.findById(id).isEmpty());
     }
 
     @Test
+    public void deleteById_NotExist() {
+        int id = 1;
+        assertThrows(NotFoundException.class, () -> {
+            quizService.deleteById(id);
+        });
+    }
+
+    @Order(3)
+    @Test
     void findById() {
-        Quiz quiz = Quiz.builder().id(1).title("Quiz 1").build();
-        when(quizRepository.getById(anyInt())).thenReturn(quiz);
-
-        Quiz foundQuiz = quizService.findById(1);
-
-        assertEquals(quiz, foundQuiz);
+        Quiz quiz = Quiz.builder().id(1).title("Quiz 1")
+                .createdDateTime(LocalDateTime.now()).build();
+        quizRepository.save(quiz);
+        assertTrue(quizRepository.findById(1).isPresent());
     }
 }

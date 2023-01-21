@@ -27,7 +27,7 @@ public class QuestionController {
     private final QuestionOptionService questionOptionService;
 
     @GetMapping("/questions/")
-    public String questionsPage(ModelMap map,@RequestParam(value = "page", defaultValue = "0") int page,
+    public String questionsPage(ModelMap map, @RequestParam(value = "page", defaultValue = "0") int page,
                                 @RequestParam(value = "size", defaultValue = "2") int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("title"));
         Page<Question> questions = questionService.findAll(pageRequest);

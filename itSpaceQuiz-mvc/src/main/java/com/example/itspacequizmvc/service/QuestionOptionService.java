@@ -18,7 +18,6 @@ public class QuestionOptionService {
     private final QuestionOptionRepository questionOptionRepository;
 
 
-
     public List<QuestionOption> addAnswerOptions(List<Integer> options) {
 
         List<QuestionOption> questionOptions = new ArrayList<>();
@@ -74,14 +73,14 @@ public class QuestionOptionService {
 
     }
 
-    public void deleteById(int id) {
-        questionOptionRepository.deleteById(id);
-    }
+//    public void deleteById(int id) {
+//        questionOptionRepository.deleteById(id);
+//    }
 
 
-    public QuestionOption findById(int id) {
-        return questionOptionRepository.getById(id);
-    }
+//    public QuestionOption findById(int id) {
+//        return questionOptionRepository.getById(id);
+//    }
 
     public List<QuestionOption> findAllByQuestion(Question question) {
 
