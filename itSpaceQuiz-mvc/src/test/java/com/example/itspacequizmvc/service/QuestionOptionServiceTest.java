@@ -3,76 +3,151 @@ package com.example.itspacequizmvc.service;
 import com.example.itspacequizcommon.entity.Question;
 import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.QuestionType;
+import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
+import com.example.itspacequizcommon.repository.QuestionRepository;
+import com.example.itspacequizcommon.repository.QuizRepository;
+import com.example.itspacequizmvc.dto.OptionsDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@TestPropertySource("/application-test.properties")
 class QuestionOptionServiceTest {
-
-    @Mock
-    private QuestionOptionRepository questionOptionRepository;
-
-    @InjectMocks
+    @Autowired
     private QuestionOptionService questionOptionService;
+    @Autowired
+    private QuestionOptionRepository questionOptionRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private QuizRepository quizRepository;
 
-    private QuestionOption option1, option2;
-    private Question question;
+    @Test
+    void save_options_test() {
+        List<String> options = Arrays.asList("Option 1", "Option 2", "Option 3");
+        List<String> correctOption = Arrays.asList("Option 1");
+        Map<String, Boolean> optionsMap = questionOptionService.saveOptions(options, correctOption);
+        assertEquals(3, optionsMap.size());
+        assertTrue(optionsMap.get("Option 1"));
+        assertFalse(optionsMap.get("Option 2"));
+        assertFalse(optionsMap.get("Option 3"));
+    }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        question = new Question();
-        question.setQuestionType(QuestionType.SINGLE_SELECT);
-        option1 = new QuestionOption();
-        option1.setTitle("Option 1");
-        option1.setCorrect(true);
-        option1.setQuestion(question);
-        option2 = new QuestionOption();
-        option2.setTitle("Option 2");
-        option2.setCorrect(false);
-        option2.setQuestion(question);
+    @Test
+    void add_options_test() {
+        Question question = getQuestion();
+
+        List<String> options = Arrays.asList("Paris", "Berlin", "London", "Yerevan");
+        List<String> correctOptions = Arrays.asList("Yerevan");
+
+        questionOptionService.addOptions(question, options, correctOptions);
+
+        List<QuestionOption> savedOptions = questionOptionRepository.findAllByQuestion(question);
+        assertEquals(4, savedOptions.size());
+
+        for (QuestionOption savedOption : savedOptions) {
+            if (savedOption.getTitle().equals("Yerevan")) {
+                assertTrue(savedOption.isCorrect());
+            } else {
+                assertFalse(savedOption.isCorrect());
+            }
+        }
     }
 
 
     @Test
-    void testAddAnswerOptions() {
-        List<Integer> options = Arrays.asList(1, 2, 3);
-        when(questionOptionRepository.getById(1)).thenReturn(option1);
+    @Transactional
+    void addAnswerOptions() {
+        getOption1();
+        getOption2();
+        List<Integer> options = Arrays.asList(getOption1().getId(), getOption2().getId());
         List<QuestionOption> questionOptions = questionOptionService.addAnswerOptions(options);
-        assertTrue(questionOptions.contains(option1));
+
+        assertThat(questionOptions).hasSize(2);
+        assertThat(questionOptions.get(0).getTitle()).isEqualTo("Yerevan");
+        assertThat(questionOptions.get(1).getTitle()).isEqualTo("Rome");
+
     }
 
     @Test
-    void testChangeOption() {
-        List<QuestionOption> options = Arrays.asList(option1);
-        when(questionOptionRepository.getById(option1.getId())).thenReturn(option1);
-        when(questionOptionRepository.save(option1)).thenReturn(option1);
-        QuestionOption changedOption = questionOptionService.changeOption(options);
-        assertEquals(changedOption, option1);
+    @Transactional
+    void chang_option_test() {
+        Question question = getQuestion();
+        QuestionOption option1 = getOption1();
+        int[] optionId = {option1.getId()};
+        String[] optionTitle = {"Yere1"};
+
+        OptionsDto options = new OptionsDto();
+        options.setOptionId(optionId);
+        options.setOptionTitle(optionTitle);
+        options.setCorrectOptions(Arrays.asList(option1.getId()));
+        questionOptionService.changeOption(question, options);
+        QuestionOption updatedOption = questionOptionRepository.getById(option1.getId());
+        assertEquals("Yere1", updatedOption.getTitle());
+
     }
 
     @Test
-    void testSaveOptions() {
-        questionOptionService.saveOptions(question, "Option 1,on");
-        verify(questionOptionRepository, times(1)).save(any(QuestionOption.class));
+    void delete_by_id_test() {
+        assertTrue(questionOptionRepository.findById(getOption1().getId()).isPresent());
+        questionOptionService.deleteById(getOption1().getId());
+        assertFalse(questionOptionRepository.findById(1).isPresent());
     }
 
     @Test
-    void testFindAllByQuestion() {
-        when(questionOptionRepository.findAllByQuestion(question)).thenReturn(Arrays.asList(option1, option2));
-        List<QuestionOption> options = questionOptionService.findAllByQuestion(question);
-        assertTrue(options.contains(option1));
-        assertTrue(options.contains(option2));
+    @Transactional
+    void find_by_id_test() {
+        QuestionOption option1 = getOption1();
+        QuestionOption actualOption = questionOptionService.findById(option1.getId());
+        QuestionOption expectedOption = questionOptionRepository.getById(option1.getId());
+        assertEquals(expectedOption, actualOption);
     }
+
+    private Quiz getQuiz() {
+        Quiz quiz = Quiz.builder().id(1).title("Quiz 1").createdDateTime(LocalDateTime.now()).build();
+        return quizRepository.save(quiz);
+    }
+
+    private Question getQuestion() {
+        Question question1 = Question.builder()
+                .id(1)
+                .title("what is the capital of Armenia")
+                .score(10.0)
+                .questionType(QuestionType.SINGLE_SELECT)
+                .quiz(getQuiz())
+                .build();
+        return questionRepository.save(question1);
+    }
+
+    private QuestionOption getOption1() {
+        QuestionOption option1 = new QuestionOption();
+        option1.setTitle("Yerevan");
+        option1.setCorrect(true);
+        option1.setQuestion(getQuestion());
+        return questionOptionRepository.save(option1);
+
+    }
+
+    private QuestionOption getOption2() {
+        QuestionOption option2 = new QuestionOption();
+        option2.setTitle("Rome");
+        option2.setCorrect(false);
+        option2.setQuestion(getQuestion());
+        return questionOptionRepository.save(option2);
+    }
+
 }

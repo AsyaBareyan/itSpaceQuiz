@@ -2,65 +2,66 @@ package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.Answer;
 import com.example.itspacequizcommon.entity.Question;
-import com.example.itspacequizcommon.entity.QuestionOption;
 import com.example.itspacequizcommon.entity.Quiz;
-import com.example.itspacequizcommon.repository.AnswerRepository;
+import com.example.itspacequizmvc.dto.ResultDto;
+import com.example.itspacequizmvc.security.CurrentUser;
 import com.example.itspacequizmvc.service.AnswerService;
 import com.example.itspacequizmvc.service.QuestionOptionService;
 import com.example.itspacequizmvc.service.QuestionService;
 import com.example.itspacequizmvc.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class AnswerController {
     private final AnswerService answerService;
-    private final AnswerRepository answerRepository;
-    private final QuestionService questionService;
+
     private final QuizService quizService;
     private final QuestionOptionService questionOptionService;
+    private final QuestionService questionService;
 
 
     @PostMapping("/user/quiz/{id}")
-    public String answer(@PathVariable("id") int id,@ModelAttribute Answer answer,
+    public String answer(@PathVariable("id") int id, @ModelAttribute Answer answer,
                          @RequestParam("qOption") List<Integer> options,
                          ModelMap map) {
         Quiz quiz = quizService.findById(id);
-        answer.setDateTime(LocalDateTime.now());
-
-        List<QuestionOption> questionOptions = questionOptionService.addAnswerOptions(options);
-        answer.setQuestionOption(questionOptions);
-
-        Question saveAndReturn = answerService.saveAndReturn(answer, quiz);
-        List<Question> allQuestionsByQuiz = questionService.findAllByQuiz(quiz);
-        List<Answer> allByUser = answerRepository.findAllByUser(answer.getUser());
-        List<Answer> byQuiz = new ArrayList<>();
-        for (Answer answer1 : allByUser) {
-            if (answer1.getQuestion().getQuiz().getId() == quiz.getId()) {
-                byQuiz.add(answer1);
-            }
-        }
-        if (saveAndReturn == null) {
-            map.addAttribute("result", answerService.result(byQuiz));
-            map.addAttribute("maxResult", answerService.maxResult(allQuestionsByQuiz));
+        ResultDto resultDto = answerService.addAnswer(quiz, answer, options);
+        if (resultDto.getQuestion() == null) {
+            map.addAttribute("result", resultDto.getResult());
+            map.addAttribute("maxResult", resultDto.getMaxResult());
             return "result";
         }
-        List<QuestionOption> allByQuestion = questionOptionService.findAllByQuestion(saveAndReturn);
-        map.addAttribute("question", saveAndReturn);
+        map.addAttribute("question", resultDto.getQuestion());
         map.addAttribute("quiz", quiz);
-        map.addAttribute("options", allByQuestion);
-        map.addAttribute("user",answer.getUser());
+        map.addAttribute("options", questionOptionService.findAllByQuestion(resultDto.getQuestion()));
+        map.addAttribute("user", answer.getUser());
         return "answer";
     }
+
+
+    @GetMapping("/user/quiz/{id}")
+    public String createAnswerPage(ModelMap map, @PathVariable("id") int id,
+                                   @AuthenticationPrincipal CurrentUser currentUser) {
+        Quiz quiz = quizService.findById(id);
+        List<Question> questions = questionService.findAllByQuiz(quiz);
+        map.addAttribute("questions", questions);
+        map.addAttribute("quiz", quiz);
+        map.addAttribute("user", currentUser.getUser());
+
+        for (Question question : questions) {
+            map.addAttribute("question", question);
+            map.addAttribute("options", questionOptionService.findAllByQuestion(question));
+        }
+
+        return "answer";
+    }
+
 
 }

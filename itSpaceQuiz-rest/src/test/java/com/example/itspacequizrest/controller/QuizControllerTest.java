@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class QuizControllerTest {
-    private static MockHttpServletRequest request;
 
     @Autowired
     private WebApplicationContext wac;
@@ -50,7 +48,7 @@ class QuizControllerTest {
 
     @Test
     @Order(1)
-    void testAllQuizzes() throws Exception {
+    void all_quizzes_test() throws Exception {
         addTestQuizzes();
         mvc.perform(MockMvcRequestBuilders.get("/quiz")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -63,7 +61,7 @@ class QuizControllerTest {
 
     @Test
     @Order(2)
-    void testGetQuizById() throws Exception {
+    void get_quiz_by_id_test() throws Exception {
 //        addTestQuizzes();
 
         int id = 1;
@@ -76,7 +74,7 @@ class QuizControllerTest {
 
     @Test
     @Order(3)
-    void testSaveQuiz() throws Exception {
+    void save_quiz_test() throws Exception {
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
         objectNode.put("id", 1);
         objectNode.put("title", "spring");
@@ -92,7 +90,7 @@ class QuizControllerTest {
 
     @Test
     @Order(4)
-    public void delete_quiz() throws Exception {
+    public void delete_quiz_test() throws Exception {
         addTestQuizzes();
         assertTrue((quizRepository.findById(1).isPresent()));
         mvc.perform(MockMvcRequestBuilders.delete("/quiz/{id}", 1))

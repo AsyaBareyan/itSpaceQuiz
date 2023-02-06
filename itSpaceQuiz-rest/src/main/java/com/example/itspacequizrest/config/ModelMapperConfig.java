@@ -1,4 +1,4 @@
-package com.example.itspacequizcommon.config;
+package com.example.itspacequizrest.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -5,46 +5,51 @@
     <title>Create question</title>
 </head>
 <body>
-<form th:if="${quiz!=null}" action="/question" th:object="${question}" method="post">
+<div th:if="${errors != null && !errors.isEmpty()}">
+    <ul>
+        <li style="color: red" th:each="error: ${errors}" th:text="${error}"></li>
+    </ul>
+</div>
+<form action="/question" method="post" th:if="${quiz!=null}">
     <input th:if="${question != null}" type="hidden" th:value="${question.id}" name="id">
-    Title: <input type="text" name="title" th:value="${question == null} ? '' : ${question.title}"/> <br>
+    Title: <input name="title" th:value="${question == null} ? '' : ${question.title}" type="text"> <br>
     score:<input type="number" step="0.1" name="score" th:value="${question == null} ? '' : ${question.score}"/><br>
-    select type: <select  id="select" onclick="display();" name="questionType" class="form-control" >
+    select type: <select class="form-control" id="select" name="questionType" onclick="display();">
     <option value="">Select</option>
     <option value="MULTI_SELECT">Multi select</option>
     <option value="SINGLE_SELECT">Single select</option>
 </select><br><br>
 
-    <div id="demo" style="display: none;" >
-    <label for="1"><input type="text" name="title1">
-        <input type="radio" id="1" name="title1">
-    </label>
-    <label for="2"><input type="text" name="title2">
-        <input type="radio" id="2" name="title2">
-    </label>
-    <label for="3"><input type="text" name="title3">
-        <input type="radio" id="3" name="title3">
-    </label>
-    <label for="4"><input type="text" name="title4">
-        <input type="radio" id="4" name="title4">
-    </label>
+    <div id="demo" style="display: none;">
+        <div id="inputs">
+<!--            <div>-->
+<!--                <input type="text" id="options" name="options">-->
+<!--                <input type="radio" id="correctOptions" name="correctOptions" value="" onclick="updateRadioValue(this)">-->
+<!--                <label for="options"></label>-->
+<!--            </div>-->
+        </div>
+
+        <button onclick="addInput()" type="button">Add Option</button>
+
     </div>
-    <div id="demo1" style="display: none;" >
+    <div id="demo1" style="display: none;">
+        <div id="inputsCheckbox">
+            <!--            <div>-->
+            <!--                <input type="text" id="options" name="options">-->
+            <!--                <input type="radio" id="correctOptions" name="correctOptions" value="" onclick="updateRadioValue(this)">-->
+            <!--                <label for="options"></label>-->
+            <!--            </div>-->
+        </div>
 
-        <label for="5"><input type="text" name="title1">
-            <input type="checkbox" id="5" name="title1">
-        </label><br>
-        <label for="6"><input type="text" name="title2">
-            <input type="checkbox" id="6" name="title2">
-        </label><br>
-        <label for="7"><input type="text" name="title3">
-            <input type="checkbox" id="7" name="title3">
-        </label> <br>
-        <label for="8"><input type="text" name="title4">
-            <input type="checkbox" id="8" name="title4">
-        </label>
-    </div><br>
+        <button onclick="addInputCheckbox()" type="button">Add Option</button>
 
+        <!--        <label for="5"><input type="text" name="title1">-->
+        <!--            <input type="checkbox" id="5" name="title1">-->
+        <!--        </label><br>-->
+
+
+    </div>
+    <br>
 
 
     <input type="hidden" th:value="${quiz.id}" name="quiz">
@@ -53,32 +58,79 @@
 </form>
 <script>
     function display() {
-        var x=document.getElementById('select').value;
-        if(x=="MULTI_SELECT") {
+        var x = document.getElementById('select').value;
+        if (x == "MULTI_SELECT") {
             document.getElementById('demo').style.display = "none";
             document.getElementById('demo1').style.display = "block";
-        }else if (x=="SINGLE_SELECT"){
+        } else if (x == "SINGLE_SELECT") {
 
             document.getElementById('demo').style.display = "block";
             document.getElementById('demo1').style.display = "none";
         }
-        // document.getElementById("demo1").innerHTML = x;
-        // document.getElementById("demo").getAttribute('value');
-        // document.getElementById("demo1").getAttribute('value');
-        //
-        // var value = selectedVal.value;
-        // if(value==MULTI_SELECT)
-        // document.getElementById("demo").style.display = "none";
-        // if(value==SINGLE_SELECT)
-        // document.getElementById("demo1").style.display = "block";
 
     }
 </script>
 
+<script>
+    var inputCounter = 1;
 
+    function addInput() {
+        var inputsDiv = document.getElementById('inputs');
 
+        var newDiv = document.createElement('div');
+        newDiv.innerHTML = `
+      <input type="text" id="options${inputCounter}" name="options">
+      <input type="radio" id="correctOptions${inputCounter}" name="correctOptions" value="" onclick="updateRadioValue(this)">
+      <label for="options${inputCounter}"></label>
 
+    `;
+        var removeBtn = document.createElement('button');
+        removeBtn.innerHTML = "Remove";
+        removeBtn.addEventListener('click', function () {
+            var parentDiv = this.parentNode;
+            parentDiv.remove();
+        });
+        newDiv.appendChild(removeBtn);
 
+        inputsDiv.appendChild(newDiv);
+
+        inputCounter++;
+    }
+
+    function updateRadioValue(radio) {
+        radio.value = document.getElementById(`options${radio.id.slice(-1)}`).value;
+    }
+</script>
+<script>
+    var inputCounter = 1;
+
+    function addInputCheckbox() {
+        var inputsDiv = document.getElementById('inputsCheckbox');
+
+        var newDiv = document.createElement('div');
+        newDiv.innerHTML = `
+      <input type="text" id="options${inputCounter}" name="options">
+      <input type="checkbox" id="correctOptions${inputCounter}" name="correctOptions" value="" onclick="updateCheckboxValue(this)">
+      <label for="options${inputCounter}"></label>
+
+    `;
+        var removeBtn = document.createElement('button');
+        removeBtn.innerHTML = "Remove";
+        removeBtn.addEventListener('click', function () {
+            var parentDiv = this.parentNode;
+            parentDiv.remove();
+        });
+        newDiv.appendChild(removeBtn);
+
+        inputsDiv.appendChild(newDiv);
+
+        inputCounter++;
+    }
+
+    function updateCheckboxValue(checkbox) {
+        checkbox.value = document.getElementById(`options${checkbox.id.slice(-1)}`).value;
+    }
+</script>
 
 
 <table border="1">
@@ -103,7 +155,7 @@
     </tr>
 
 </table>
-<a href="/questions/">view all  questions</a>
+<a href="/questions/">view all questions</a>
 
 
 </body>

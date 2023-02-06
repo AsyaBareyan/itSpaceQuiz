@@ -1,4 +1,4 @@
-package com.example.itspacequizmvc.exception;
+package com.example.itspacequizcommon.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

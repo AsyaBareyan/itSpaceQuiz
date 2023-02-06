@@ -4,7 +4,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="addUserTable" author="AsyaBareyan">
         <sql>create type user_enum AS ENUM ('STUDENT','TEACHER')</sql>
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column name="id" type="INT" autoIncrement="true">
                 <constraints unique="false" primaryKey="true" nullable="false"/>
             </column>
@@ -109,8 +109,8 @@
 </createTable>
 <addForeignKeyConstraint baseTableName="answer"
                          baseColumnNames="user_id"
-                         constraintName="user_fk"
-                         referencedTableName="user"
+                         constraintName="users_fk"
+                         referencedTableName="users"
                          referencedColumnNames="id"
                          onDelete="CASCADE"
                          onUpdate="CASCADE"/>

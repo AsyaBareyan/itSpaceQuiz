@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SaveAnswerRequest {
-    private int userId;
     private int questionId;
     private List<Integer> questionOption;
 

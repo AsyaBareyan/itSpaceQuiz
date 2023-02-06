@@ -11,10 +11,4 @@ public interface QuestionOptionRepository extends JpaRepository<QuestionOption,I
 
     List<QuestionOption> findAllByQuestion(Question question);
 
-    QuestionOption findQuestionOptionByTitle(String title);
-
-
-//    List<QuestionOption> findAllByCorrectIsTrue();
-//    List<QuestionOption> findAllByQuestionAndCorrectIsTrue(Question question);
-
 }

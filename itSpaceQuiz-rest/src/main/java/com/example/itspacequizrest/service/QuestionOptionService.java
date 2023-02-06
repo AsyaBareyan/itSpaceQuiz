@@ -2,28 +2,23 @@ package com.example.itspacequizrest.service;
 
 import com.example.itspacequizcommon.entity.Question;
 import com.example.itspacequizcommon.entity.QuestionOption;
-import com.example.itspacequizcommon.entity.QuestionType;
 import com.example.itspacequizcommon.repository.QuestionOptionRepository;
-import com.example.itspacequizcommon.repository.QuestionRepository;
+import com.example.itspacequizrest.dto.SaveQuestionOptionRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuestionOptionService {
 
     private final QuestionOptionRepository questionOptionRepository;
-
-
-
-    public QuestionOption save(QuestionOption questionOption) {
-        return questionOptionRepository.save(questionOption);
-    }
+    private final ModelMapper modelMapper;
 
 
     public List<QuestionOption> addAnswerOptions(List<Integer> options) {
@@ -35,59 +30,24 @@ public class QuestionOptionService {
         return questionOptions;
     }
 
-    public QuestionOption changeOption(List<QuestionOption> questionOptions) {
-        for (QuestionOption questionOption : questionOptions) {
-            QuestionOption byId = questionOptionRepository.getById(questionOption.getId());
-            return questionOptionRepository.save(byId);
+    public void changeOption(Question question, SaveQuestionOptionRequest questionOption) {
+        List<QuestionOption> allByQuestion = findAllByQuestion(question);
+        for (QuestionOption option : allByQuestion) {
+            QuestionOption updateOption = questionOptionRepository.getById(option.getId());
+            updateOption.setQuestion(question);
+            updateOption.setTitle(questionOption.getTitle());
+            updateOption.setCorrect(questionOption.isCorrect());
+            questionOptionRepository.save(updateOption);
+            return;
+
         }
-        return null;
     }
 
-    public void saveOptions(Question question, String title) {
-        QuestionOption questionOption = new QuestionOption();
-
-        String[] split = title.split(",");
-//        if (question.getQuestionType() == QuestionType.SINGLE_SELECT) {
-            questionOption.setTitle(split[0]);
-//        } else {
-//            questionOption.setTitle(split[1]);
-//        }
-        questionOption.setQuestion(question);
-        if (Arrays.asList(split).contains("on")) {
-            questionOption.setCorrect(true);
-        }
-
-        questionOptionRepository.save(questionOption);
-
-    }
-
-    public void editOptions(Question question, QuestionOption questionOption, String title) {
-
-        String[] split = title.split(",");
-        if (question.getQuestionType() == QuestionType.SINGLE_SELECT) {
-            questionOption.setTitle(split[0]);
-        } else {
-            questionOption.setTitle(split[0]);
-        }
-        questionOption.setQuestion(question);
-        if (!Arrays.asList(split).contains("on")) {
-            questionOption.setCorrect(false);
-        }
-        if (Arrays.asList(split).contains("on")) {
-            questionOption.setCorrect(true);
-        }
-        questionOptionRepository.save(questionOption);
-
-    }
 
     public void deleteById(int id) {
         questionOptionRepository.deleteById(id);
     }
 
-
-    public QuestionOption findById(int id) {
-        return questionOptionRepository.getById(id);
-    }
 
     public List<QuestionOption> findAllByQuestion(Question question) {
 
@@ -95,5 +55,17 @@ public class QuestionOptionService {
     }
 
 
-//    public List<QuestionOption> addOption()
+    public void addOptions(Question question, List<SaveQuestionOptionRequest> options) {
+
+        for (SaveQuestionOptionRequest option : options) {
+            QuestionOption questionOption = new QuestionOption();
+            questionOption.setQuestion(question);
+            questionOption.setTitle(option.getTitle());
+            questionOption.setCorrect(option.isCorrect());
+            questionOptionRepository.save(questionOption);
+            log.info("Successfully saved option with id {}", questionOptionRepository.save(questionOption).getId());
+        }
+    }
+
 }
+

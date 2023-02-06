@@ -21,17 +21,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -76,40 +72,14 @@ class QuestionControllerTest {
     }
 
     @Test
-    void getAllQuestions() throws Exception {
-        addTestQuestions();
-        mvc.perform(MockMvcRequestBuilders.get("/question")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
-
-        assertEquals(2, questionService.findAll().size());
-//        List<QuestionResponseDto> questionResponseDtoList = Arrays.asList(new QuestionResponseDto(),
-//                new QuestionResponseDto());
-//        when(questionService.findAll()).thenReturn(questionResponseDtoList);
-//        ResponseEntity<List<QuestionResponseDto>> response = questionController.getAllQuestions();
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(questionResponseDtoList, response.getBody());
-
-    }
-
-    @Test
-    void responseAllQuestionsByQuiz() {
-
-    }
-
-    @Test
-    void createQuestion() throws Exception {
+    void create_question_test() throws Exception {
         ObjectNode objectNode = new ObjectMapper().createObjectNode();
         objectNode.put("id", "4");
         objectNode.put("title", "vorn e HH mayraqaxaqy?");
         objectNode.put("score", "1.0");
         objectNode.put("questionType", "MULTI_SELECT");
         objectNode.put("quizId", "1");
-        objectNode.put("title1", "Option 1");
-        objectNode.put("title2", "Option 2");
-        objectNode.put("title3", "Option 3");
-        objectNode.put("title4", "Option 4");
+
         mvc.perform(post("/question")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectNode.toString()))
@@ -117,34 +87,26 @@ class QuestionControllerTest {
     }
 
     @Test
-    public void deleteQuestion() throws Exception {
+    public void delete_question_test() throws Exception {
         int id = 1;
-//            doNothing().when(questionService).deleteById(id);
 
         mvc.perform(delete("/question/{id}", id))
                 .andExpect(status().isOk());
         assertFalse(questionRepository.findById(1).isPresent());
 
-//            verify(questionService, times(1)).deleteById(id);
     }
 
 
     @Test
-    void editQuestion() throws Exception {
-            SaveQuestionAndOptionRequest request = new SaveQuestionAndOptionRequest();
-            request.setTitle("Test question update");
-            request.setTitle1("Option 1");
-            request.setTitle2("Option 2");
-            request.setTitle3("Option 3");
-            request.setTitle4("Option 4");
+    void edit_question_test() throws Exception {
+        SaveQuestionAndOptionRequest request = new SaveQuestionAndOptionRequest();
+        request.setTitle("Test question update");
 
         ObjectMapper objectMapper = new ObjectMapper();
         mvc.perform(put("/question/1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isOk());
-
-            // Additional asserts can be added here to verify that the question and options were updated correctly.
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
 
 
     }

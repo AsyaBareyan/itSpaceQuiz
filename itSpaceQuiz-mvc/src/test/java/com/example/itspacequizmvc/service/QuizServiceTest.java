@@ -1,8 +1,8 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Quiz;
+import com.example.itspacequizcommon.exception.NotFoundException;
 import com.example.itspacequizcommon.repository.QuizRepository;
-import com.example.itspacequizmvc.exception.NotFoundException;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

@@ -8,16 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class SaveUserRequest {
     @NotNull(message = "name cannot be null")
-@Size(min = 2, message = "first name must not be less than two characters ")
+    @Size(min = 2, message = "first name must not be less than two characters ")
     private String name;
     @NotNull(message = "surname cannot be null")
-@Size(min = 2, message = "first name must not be less than two characters ")
+    @Size(min = 2, message = "first name must not be less than two characters ")
     private String surname;
     @NotNull(message = "email cannot be null")
     @Email

@@ -1,124 +1,145 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.*;
-import com.example.itspacequizcommon.repository.AnswerRepository;
-import com.example.itspacequizcommon.repository.QuestionOptionRepository;
-import com.example.itspacequizcommon.repository.QuestionRepository;
+import com.example.itspacequizcommon.repository.*;
+import com.example.itspacequizmvc.dto.ResultDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
-public class AnswerServiceTest {
-    @Mock
+@SpringBootTest
+@TestPropertySource("/application-test.properties")
+class AnswerServiceTest {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private AnswerRepository answerRepository;
-
-    @Mock
+    @Autowired
+    private QuizRepository quizRepository;
+    @Autowired
     private QuestionRepository questionRepository;
-
-    @Mock
+    @Autowired
     private QuestionOptionRepository questionOptionRepository;
+    @Autowired
+    private QuestionOptionService questionOptionService;
 
+    @Autowired
     private AnswerService answerService;
+    private QuestionOption option1,option2;
 
-    private Quiz quiz;
-    private User user;
-    private Question question1, question2;
-    private QuestionOption option1, option2, option3, option4;
-    private Answer answer1, answer2;
-    private List<Answer> answers;
-    private List<Question> questions;
-    private List<QuestionOption> options;
-    private List<QuestionOption> options1;
-    private List<QuestionOption> options2;
 
-    @BeforeEach
-    public void setUp() {
-        answerService = new AnswerService(answerRepository, questionRepository, questionOptionRepository);
-
-        quiz = new Quiz();
-        user=new User(1,"poxos","poxosyan","pox@mail.ru","pox",UserType.STUDENT);
-
-        question1 = new Question();
-        question2 = new Question();
+    @Test
+    @Transactional
+    void save_and_return_when_NotAnsweredAllQuestions() {
+        Quiz quiz = getQuiz();
+        User user = getUser();
+        Question question1 = getQuestion1();
+        Question question2 = getQuestion2();
         option1 = new QuestionOption();
-        option2 = new QuestionOption();
-        option3 = new QuestionOption();
-        option4 = new QuestionOption();
-        answer1 = new Answer();
-        answer2 = new Answer();
-
-        questions = Arrays.asList(question1, question2);
-        options = Arrays.asList(option1, option2, option3, option4);
-
-        question1.setQuiz(quiz);
-        question1.setScore(5);
-        question2.setQuiz(quiz);
-        question2.setScore(10);
-
-        option1.setQuestion(question1);
-        option2.setQuestion(question1);
-        option3.setQuestion(question2);
-        option4.setQuestion(question2);
+        option1.setTitle("Option 1");
         option1.setCorrect(true);
-        option2.setCorrect(false);
-        option3.setCorrect(true);
-        option4.setCorrect(false);
+        option1.setQuestion(question1);
+        questionOptionRepository.save(option1);
+        option2 = new QuestionOption();
+        option2.setTitle("Option 2");
+        option2.setCorrect(true);
+        option2.setQuestion(question2);
 
-        options1 = Arrays.asList(option1, option2);
-        options2 = Arrays.asList(option3,option4);
-
-        answer1.setQuestion(question1);
-        answer1.setQuestionOption(Arrays.asList(option1));
+        Answer answer1=new Answer();
         answer1.setUser(user);
-        answer2.setQuestion(question2);
-        answer2.setQuestionOption(Arrays.asList(option3));
+        answer1.setQuestion(question1);
+        answer1.setDateTime(LocalDateTime.now());
+        answer1.setQuestionOption(new ArrayList<>(questionOptionRepository.save(option1).getId()));
+        Answer saveAnswer = answerRepository.save(answer1);
+        ResultDto resultDto = answerService.saveAndReturn(saveAnswer, quiz);
+        assertEquals(question2,resultDto.getQuestion());
+        assertEquals(0.0, resultDto.getResult());
+        assertEquals(0.0, resultDto.getMaxResult());
+
+
+    }
+
+    @Test
+    @Transactional
+    void save_and_return_when_AnsweredAllQuestions() {
+        Quiz quiz = getQuiz();
+        User user = getUser();
+        Question question1 = getQuestion1();
+        Question question2 = getQuestion2();
+        option1 = new QuestionOption();
+        option1.setTitle("Option 1");
+        option1.setCorrect(true);
+        option1.setQuestion(question1);
+        questionOptionRepository.save(option1);
+        option2 = new QuestionOption();
+        option2.setTitle("Option 2");
+        option2.setCorrect(true);
+        option2.setQuestion(question2);
+        questionOptionRepository.save(option2);
+
+        Answer answer1=new Answer();
+        answer1.setUser(user);
+        answer1.setQuestion(question1);
+        answer1.setDateTime(LocalDateTime.now());
+        List<QuestionOption> questionOptions = questionOptionService.addAnswerOptions(Arrays.asList(option1.getId()));
+        answer1.setQuestionOption(questionOptions);
+        answerRepository.save(answer1);
+        Answer answer2=new Answer();
         answer2.setUser(user);
-        answers = Arrays.asList(answer1, answer2);
+        answer2.setQuestion(question2);
+        answer2.setDateTime(LocalDateTime.now());
+        List<QuestionOption> questionOptions2 = questionOptionService.addAnswerOptions(Arrays.asList(option2.getId()));
+        answer2.setQuestionOption(questionOptions2);
+        Answer saveAnswer2 = answerRepository.save(answer2);
+        ResultDto resultDto = answerService.saveAndReturn(saveAnswer2, quiz);
+        assertNull(resultDto.getQuestion());
+        assertEquals(15.0, resultDto.getResult());
+        assertEquals(15.0, resultDto.getMaxResult());
     }
 
-    @Test
-    public void testSave() {
-        when(answerRepository.save(answer1)).thenReturn(answer1);
-        assertEquals(answer1, answerService.save(answer1));
+    private User getUser() {
+        User user = new User();
+        user.setName("Poxos");
+        user.setSurname("Poxosyan");
+        user.setEmail("Poxos@mail.ru");
+        user.setPassword("Poxos");
+        user.setUserType(UserType.STUDENT);
+        return userRepository.save(user);
     }
 
-    @Test
-    public void testSaveAndReturn_allQuestionsAnswered() {
-        when(answerRepository.save(answer1)).thenReturn(answer1);
-        when(questionRepository.findAllByQuiz(quiz)).thenReturn(questions);
-        when(answerRepository.findAllByUser(user)).thenReturn(answers);
-
-        assertNull(answerService.saveAndReturn(answer1, quiz));
+    private Quiz getQuiz() {
+        Quiz quiz = Quiz.builder().id(1).title("Quiz 1").createdDateTime(LocalDateTime.now()).build();
+        return quizRepository.save(quiz);
     }
 
-    @Test
-    public void testSaveAndReturn_nextQuestion() {
-        when(answerRepository.save(answer1)).thenReturn(answer1);
-        when(questionRepository.findAllByQuiz(quiz)).thenReturn(questions);
-        when(answerRepository.findAllByUser(user)).thenReturn(Arrays.asList(answer1));
-
-        assertEquals(question2, answerService.saveAndReturn(answer1, quiz));
+    private Question getQuestion1() {
+        Question question1 = Question.builder()
+                .id(1)
+                .title("Question 1?")
+                .score(10.0)
+                .questionType(QuestionType.SINGLE_SELECT)
+                .quiz(getQuiz())
+                .build();
+        return questionRepository.save(question1);
     }
 
-@Test
-    public void testResult(){
-
-    when(questionOptionRepository.findAllByQuestion(question1)).thenReturn(options1);
-    when(questionOptionRepository.findAllByQuestion(question2)).thenReturn(options2);
-
-
-    double result = answerService.result(answers);
-    assertEquals(15, result);
-}
-
+    private Question getQuestion2() {
+        Question question2 = Question.builder()
+                .id(2)
+                .title("Question 2?")
+                .score(5.0)
+                .questionType(QuestionType.SINGLE_SELECT)
+                .quiz(getQuiz())
+                .build();
+        return questionRepository.save(question2);
+    }
 }

@@ -2,7 +2,6 @@ package com.example.itspacequizmvc.controller;
 
 import com.example.itspacequizcommon.entity.User;
 import com.example.itspacequizcommon.entity.UserType;
-import com.example.itspacequizcommon.repository.UserRepository;
 import com.example.itspacequizmvc.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @RequiredArgsConstructor
 public class MainController {
-    private final UserRepository userRepository;
 
     @GetMapping("/")
     public String main() {
@@ -29,19 +27,6 @@ public class MainController {
         return "login";
     }
 
-    //    @PostMapping("/login")
-//    public String login(@ModelAttribute User user, ModelMap map) {
-//        String email = user.getEmail();
-//        String password = user.getPassword();
-//        Optional<User> byEmail = userRepository.findByEmail(email);
-//        map.addAttribute("email", email);
-//        map.addAttribute("password", password);
-//        if (byEmail.get().getUserType() == UserType.TEACHER) {
-//            return "teacher";
-//        }
-//
-//        return "user";
-//    }
     @PostMapping("/login")
     public String userLogin(@ModelAttribute CurrentUser currentUser, ModelMap map) {
         map.addAttribute("currentUser", currentUser);

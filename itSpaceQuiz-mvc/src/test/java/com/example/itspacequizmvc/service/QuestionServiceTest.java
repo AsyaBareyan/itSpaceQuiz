@@ -1,82 +1,112 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Question;
+import com.example.itspacequizcommon.entity.QuestionType;
 import com.example.itspacequizcommon.entity.Quiz;
-import com.example.itspacequizcommon.repository.QuestionOptionRepository;
+import com.example.itspacequizcommon.exception.NotFoundException;
 import com.example.itspacequizcommon.repository.QuestionRepository;
+import com.example.itspacequizmvc.dto.QuestionWithOptionDto;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@TestPropertySource("/application-test.properties")
+@RequiredArgsConstructor
 class QuestionServiceTest {
-
-    @Mock
-    private QuestionRepository questionRepository;
-
-    @Mock
-    private QuestionOptionRepository questionOptionRepository;
-
-    @Mock
-    private Pageable pageable;
-
-    @InjectMocks
+    @Autowired
     private QuestionService questionService;
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private QuizService quizService;
 
-    @Test
-    void testSave() {
-        Question question = new Question();
-        when(questionRepository.save(any(Question.class))).thenReturn(question);
+    private Quiz quiz;
 
-        Question result = questionService.save(question);
 
-        assertEquals(question, result);
+    @BeforeEach
+    void setUp() {
+        quiz = new Quiz(1, "quiz1", LocalDateTime.now());
+        quizService.save(quiz);
     }
 
     @Test
-    void testDeleteById() {
-        questionService.deleteById(1);
+    void save_test() {
+        Question question = getQuestion();
+        Question expected = questionRepository.save(question);
+        Question actual = questionService.save(question);
+        assertEquals(expected,actual);
+    }
+
+
+    @Test
+    void delete_by_id_test() {
+        Question question = getQuestion();
+        questionRepository.save(question);
+        questionService.deleteById(question.getId());
+
+        assertFalse(questionRepository.findById(question.getId()).isPresent());
+
+    }
+    @Test
+    public void delete_by_id_doesNotExist_test(){
+        assertThrows(NotFoundException.class, () -> questionService.deleteById(10));
     }
 
     @Test
-    void testFindById() {
-        Question question = new Question();
-        when(questionRepository.getById(1)).thenReturn(question);
-
-        Question result = questionService.findById(1);
-
-        assertEquals(question, result);
+    @Transactional
+    void find_by_id_test() {
+        Question question = questionRepository.save(getQuestion());
+        Question actualFindByIdQuestion = questionService.findById(question.getId());
+        assertEquals(questionRepository.getById(question.getId()), actualFindByIdQuestion);
     }
 
     @Test
-    void testFindAllByQuiz() {
-        Quiz quiz = new Quiz();
-        List<Question> questions = List.of(new Question());
-        when(questionRepository.findAllByQuiz(quiz)).thenReturn(questions);
-
-        List<Question> result = questionService.findAllByQuiz(quiz);
-
-        assertEquals(questions, result);
+    public void find_by_id_doesNotExist_test(){
+        assertThrows(NotFoundException.class, () -> questionService.findById(10));
     }
 
     @Test
-    void testFindAll() {
-        Page<Question> questions = Page.empty();
-        when(questionRepository.findAll(pageable)).thenReturn(questions);
+    void findAllByQuiz() {
+        questionRepository.save(getQuestion());
 
-        Page<Question> result = questionService.findAll(pageable);
+        assertEquals(1,questionService.findAllByQuiz(quiz).size());
+    }
 
-        assertEquals(questions, result);
+    @Test
+    void addQuestion() {
+        QuestionWithOptionDto questionWithOptionDto = new QuestionWithOptionDto();
+        questionWithOptionDto.setTitle("question 2?");
+        questionWithOptionDto.setScore(1.0);
+        questionWithOptionDto.setQuestionType(QuestionType.SINGLE_SELECT);
+        questionWithOptionDto.setQuiz(quiz);
+
+        Question savedQuestion = questionService.addQuestion(questionWithOptionDto);
+
+        assertNotNull(savedQuestion.getId());
+        assertEquals(questionWithOptionDto.getTitle(), savedQuestion.getTitle());
+        assertEquals(questionWithOptionDto.getScore(), savedQuestion.getScore());
+        assertEquals(questionWithOptionDto.getQuestionType(), savedQuestion.getQuestionType());
+        assertEquals(questionWithOptionDto.getQuiz().getId(), savedQuestion.getQuiz().getId());
+    }
+
+
+    private Question getQuestion() {
+        return Question.builder()
+                .id(1)
+                .title("Question 1?")
+                .score(5.0)
+                .questionType(QuestionType.SINGLE_SELECT)
+                .quiz(quiz)
+                .build();
     }
 }

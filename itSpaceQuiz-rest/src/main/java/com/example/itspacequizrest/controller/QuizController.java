@@ -5,7 +5,6 @@ import com.example.itspacequizcommon.entity.Quiz;
 import com.example.itspacequizrest.dto.SaveQuizRequest;
 import com.example.itspacequizrest.service.QuizService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuizController {
     private final QuizService quizService;
-    private final ModelMapper modelMapper;
 
     @PostMapping("/quiz")
     public Quiz saveQuiz(@RequestBody SaveQuizRequest saveQuizRequest) {
@@ -43,8 +41,6 @@ public class QuizController {
     @PutMapping ("/quiz/{id}")
     public ResponseEntity updateQuiz(@RequestBody SaveQuizRequest saveQuizRequest,
                                      @PathVariable("id") int id) {
-
-
         return quizService.update(id,saveQuizRequest);
     }
 }

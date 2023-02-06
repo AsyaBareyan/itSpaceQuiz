@@ -1,17 +1,14 @@
 package com.example.itspacequizmvc.service;
 
 import com.example.itspacequizcommon.entity.Quiz;
+import com.example.itspacequizcommon.exception.NotFoundException;
 import com.example.itspacequizcommon.repository.QuizRepository;
-import com.example.itspacequizmvc.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,9 @@ public class QuizService {
 
     public Quiz save(Quiz quiz) {
         quiz.setCreatedDateTime(LocalDateTime.now());
-        return quizRepository.save(quiz);
+        Quiz savedQuiz = quizRepository.save(quiz);
+        log.info("Successfully saved quiz with id {}", savedQuiz.getId());
+        return savedQuiz;
     }
 
     public void deleteById(int id) throws NotFoundException {
@@ -39,9 +38,13 @@ public class QuizService {
 
 
     public Quiz findById(int id) {
+        log.info("Attempting to find quiz with id {}", id);
         if (!quizRepository.existsById(id)) {
-            throw new NoSuchElementException("Quiz not found for provided id.");
+            log.error("Quiz not found for id {}", id);
+            throw new NotFoundException("Quiz not found for provided id.");
         }
-        return quizRepository.getById(id);
+        Quiz quiz = quizRepository.getById(id);
+        log.info("Successfully found quiz with id {}", id);
+        return quiz;
     }
 }

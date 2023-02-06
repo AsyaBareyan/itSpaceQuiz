@@ -5,75 +5,58 @@
     <title>Edit question</title>
 </head>
 <body>
+<div th:if="${errors != null && !errors.isEmpty()}">
+    <ul>
+        <li style="color: red" th:each="error: ${errors}" th:text="${error}"></li>
+    </ul>
+</div>
 <form th:if="${quiz!=null}" action="/editQuestion" th:object="${question}" method="post">
     <input th:if="${question != null}" type="hidden" th:value="${question.id}" name="id">
     Title: <input type="text" name="title" th:value="${question == null} ? '' : ${question.title}"/> <br>
     score:<input type="number" step="0.1" name="score" th:value="${question == null} ? '' : ${question.score}"/><br>
     select type: <select id="select" onclick="display();" name="questionType" class="form-control">
-<!--    <option th:value="${question == null} ? '' : ${question.questionType.name()}">Select</option>-->
+    <!--        <option th:value="${question == null} ? '' : ${question.questionType.name()}">Select</option>-->
+    <option value="">Select</option>
     <option value="MULTI_SELECT">Multi select</option>
     <option value="SINGLE_SELECT">Single select</option>
 </select><br><br>
 
     <div id="demo" style="display: none;">
+        <div id="inputs">
 
-        <label for="1">
+            <div th:each="option:${options}">
 
-            <input type="${option1.title}" name="title1" th:value="${option1 == null} ? '' : ${option1.title}">
-            <input type="radio" id="1" name="title1">
-        </label><br>
-        <label for="2">
+                <input id="options" name="optionId" th:if="${option != null}" th:value="${option.id}" type="hidden">
 
-            <input type="${option2.title}" name="title2" th:value="${option2 == null} ? '' : ${option2.title}">
-            <input type="radio" id="2" name="title2">
-        </label><br>
-        <label for="3">
-
-            <input type="${option3.title}" name="title3" th:value="${option3 == null} ? '' : ${option3.title}">
-            <input type="radio" id="3" name="title3">
-        </label> <br>
-        <label for="4">
-
-            <input type="${option4.title}" name="title4" th:value="${option4 == null} ? '' : ${option4.title}">
-            <input type="radio" id="4" name="title4">
-        </label>
-
-
-        <!--        <div th:if="${question.questionType.name()=='SINGLE_SELECT'}">-->
-        <!--        <div th:each="option:${options}">-->
-        <!--            <input th:if="${option != null}" type="hidden" th:value="${option.id}" name="questionOption ">-->
-
-        <!--                <label for="1">-->
-        <!--                    <input th:type="${option.id}" name="qOption" th:value="${option.title}">-->
-        <!--                    <input type="radio"  name="qOption" id="1" >-->
-        <!--                </label>-->
-
-        <!--        </div>-->
-        <!--        </div>-->
+                <label>
+                    <input name="optionTitle"
+                           th:type="${option.title}" th:value="${option.title}">
+                    <input name="correctOptions"
+                           th:value="${option.id}" type="radio">
+                </label>
+                <a th:href="@{'/deleteQuestionOption/' + ${option.id}}" th:if="${option != null}">Remove</a>
+            </div>
+        </div>
+        <button onclick="addInput()" type="button">Add Option</button>
     </div>
 
     <div id="demo1" style="display: none;">
 
-        <label for="5">
+        <div id="inputsCheckbox">
 
-            <input type="${option1.title}" name="title1" th:value="${option1 == null} ? '' : ${option1.title}">
-            <input type="checkbox" id="5" name="title1" >
-        </label><br>
-        <label for="6">
+            <div th:each="option:${options}">
 
-            <input type="${option2.title}" name="title2" th:value="${option2 == null} ? '' : ${option2.title}">
-            <input type="checkbox" id="6" name="title2" class="checkbox">
-        </label><br>
-        <label for="7">
+                <input name="multiOptionId" th:if="${option != null}" th:value="${option.id}" type="hidden">
+                <input name="multiOptionTitle"
+                       th:type="${option.title}" th:value="${option.title}">
+                <input name="correctOptions"
+                       th:value="${option.id}" type="checkbox">
 
-            <input type="${option3.title}" name="title3" th:value="${option3 == null} ? '' : ${option3.title}">
-            <input type="checkbox" id="7" name="title3">
-        </label> <br>
-        <label for="8">
+                <a th:href="@{'/deleteQuestionOption/' + ${option.id}}" th:if="${option != null}">Remove</a>
+            </div>
+        </div>
+        <button onclick="addInputCheckbox()" type="button">Add Option</button>
 
-            <input type="${option4.title}" name="title4" th:value="${option4 == null} ? '' : ${option4.title}">
-            <input type="checkbox" id="8" name="title4">
-        </label>
     </div>
 
 
@@ -96,18 +79,68 @@
     }
 
 </script>
-<!--<script>-->
-<!--    const checkbox = document.querySelector(".checkbox");-->
+<script>
+    var inputCounter = 1;
 
-<!--    checkbox.addEventListener("change", function () {-->
-<!--        if (this.checked) {-->
-<!--            console.log("checked");-->
-<!--        } else {-->
-<!--            console.log("unchecked");-->
-<!--        }-->
-<!--    })-->
-<!--</script>-->
+    function addInput() {
+        var inputsDiv = document.getElementById('inputs');
 
+        var newDiv = document.createElement('div');
+        newDiv.innerHTML = `
+<!--      <input type="hidden" id="optionsId${inputCounter}" name="optionId">-->
+      <input type="text" id="options${inputCounter}" name="newOptions">
+      <input type="radio" id="correctOptions${inputCounter}" name="correct" onclick="updateRadioValue(this)">
+      <label for="options${inputCounter}"></label>
+
+    `;
+        var removeBtn = document.createElement('button');
+        removeBtn.innerHTML = "Remove";
+        removeBtn.addEventListener('click', function () {
+            var parentDiv = this.parentNode;
+            parentDiv.remove();
+        });
+        newDiv.appendChild(removeBtn);
+
+        inputsDiv.appendChild(newDiv);
+
+        inputCounter++;
+    }
+
+    function updateRadioValue(radio) {
+        radio.value = document.getElementById(`options${radio.id.slice(-1)}`).value;
+    }
+</script>
+<script>
+    var inputCounter = 1;
+
+    function addInputCheckbox() {
+        var inputsDiv = document.getElementById('inputsCheckbox');
+
+        var newDiv = document.createElement('div');
+        newDiv.innerHTML = `
+<!--      <input type="hidden" id="checkboxOptionsId${inputCounter}" name="multiOptionId">-->
+      <input type="text" id="checkboxOptions${inputCounter}" name="newOptions">
+      <input type="checkbox" id="checkboxCorrectOptions${inputCounter}" name="correct" value="" onclick="updateCheckboxValue(this)">
+      <label for="checkboxOptions${inputCounter}"></label>
+
+    `;
+        var removeBtn = document.createElement('button');
+        removeBtn.innerHTML = "Remove";
+        removeBtn.addEventListener('click', function () {
+            var parentDiv = this.parentNode;
+            parentDiv.remove();
+        });
+        newDiv.appendChild(removeBtn);
+
+        inputsDiv.appendChild(newDiv);
+
+        inputCounter++;
+    }
+
+    function updateCheckboxValue(checkbox) {
+        checkbox.value = document.getElementById(`checkboxOptions${checkbox.id.slice(-1)}`).value;
+    }
+</script>
 
 </body>
 </html>

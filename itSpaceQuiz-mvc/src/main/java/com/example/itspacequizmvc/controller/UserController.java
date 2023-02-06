@@ -1,15 +1,13 @@
 package com.example.itspacequizmvc.controller;
 
-import com.example.itspacequizcommon.entity.*;
-
-import com.example.itspacequizmvc.security.CurrentUser;
+import com.example.itspacequizcommon.entity.Quiz;
+import com.example.itspacequizcommon.entity.User;
 import com.example.itspacequizmvc.service.QuestionOptionService;
 import com.example.itspacequizmvc.service.QuestionService;
 import com.example.itspacequizmvc.service.QuizService;
 import com.example.itspacequizmvc.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -56,32 +54,6 @@ public class UserController {
         map.addAttribute("quizzes", quizzes);
         return "user";
 
-    }
-
-    @GetMapping("/quiz/{id}")
-    public String createAnswerPage(ModelMap map, @PathVariable("id") int id,
-                                   @AuthenticationPrincipal CurrentUser currentUser) {
-        Quiz quiz = quizService.findById(id);
-        User user = currentUser.getUser();
-
-        List<Question> questions = questionService.findAllByQuiz(quiz);
-        map.addAttribute("questions", questions);
-        map.addAttribute("quiz", quiz);
-        map.addAttribute("user", user);
-
-        for (Question question : questions) {
-
-            List<QuestionOption> options = questionOptionService.findAllByQuestion(question);
-            if (!options.isEmpty()) {
-
-                map.addAttribute("options", options);
-            }
-            map.addAttribute("question", question);
-            map.addAttribute("user", user);
-            return "answer";
-        }
-
-        return "answer";
     }
 
 }

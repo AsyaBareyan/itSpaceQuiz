@@ -1,24 +1,30 @@
 package com.example.itspacequizrest.controller;
 
+import com.example.itspacequizcommon.entity.User;
+import com.example.itspacequizcommon.entity.UserType;
 import com.example.itspacequizcommon.repository.UserRepository;
+import com.example.itspacequizrest.dto.SaveUserRequest;
+import com.example.itspacequizrest.dto.UserLoginRequest;
+import com.example.itspacequizrest.dto.UserLoginResponse;
+import com.example.itspacequizrest.dto.UserResponseDto;
 import com.example.itspacequizrest.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,11 +37,11 @@ class UserControllerTest {
 
     private MockMvc mvc;
 
-    @Autowired
-    private UserService userService;
+    ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private UserRepository userRepository;
-    private ObjectMapper objectMapper;
+    @MockBean
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
@@ -43,55 +49,57 @@ class UserControllerTest {
 
     }
 
+    @Test
+    void user_login_test() throws Exception {
+//        addTestUser();
+        UserLoginRequest request = new UserLoginRequest();
+        request.setEmail("poxos@mail.ru");
+        request.setPassword("poxos");
 
-    @AfterEach
-    void tearDown() {
+        UserLoginResponse response = new UserLoginResponse();
+        response.setToken("test_token");
+
+        when(userService.authUser(any(UserLoginRequest.class)))
+                .thenReturn(ResponseEntity.ok(response));
+
+        mvc.perform(post("/user/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void saveUser() throws Exception {
-        ObjectNode objectNode = new ObjectMapper().createObjectNode();
+    void save_user_test() throws Exception {
+        SaveUserRequest request = new SaveUserRequest();
+        request.setName("Asya");
+        request.setSurname("Bareyan");
+        request.setEmail("asyabareyan@gmail.com");
+        request.setPassword("bar");
 
-        objectNode.put("name", "As");
-        objectNode.put("surname", "Bar");
-        objectNode.put("email", "as@mail.com");
-        objectNode.put("password", "bar");
-        objectNode.put("user_type", "SINGLE_SELECT");
+        UserResponseDto response = new UserResponseDto();
+        response.setId(1);
 
 
-        mvc.perform(MockMvcRequestBuilders.post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectNode.toString()))
-                .andExpect(status().is2xxSuccessful());
+        when(userService.addUser(any(SaveUserRequest.class)))
+                .thenReturn(ResponseEntity.ok(response));
 
-//        SaveUserRequest saveUserRequest = new SaveUserRequest();
-//        saveUserRequest.setName("As");
-//        saveUserRequest.setSurname("Bar");
-//        saveUserRequest.setEmail("Asyabareyan@gmail.com");
-//        saveUserRequest.setPassword("bar");
-//
-//        userService.save(saveUserRequest);
-//assertTrue(userRepository.findByEmail("Asyabareyan@gmail.com").isPresent());
-    }
-
-    @Test
-    void saveUser_EmailDuplicate() throws Exception {
-        ObjectNode objectNode = new ObjectMapper().createObjectNode();
-        objectNode.put("name", "as");
-        objectNode.put("surname", "bareyan");
-        objectNode.put("email", "as@mail.com");
-        objectNode.put("password", "bar");
-
-//        mvc.perform(post("/user")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectNode.toString()))
-//                .andExpect(status().is2xxSuccessful());
-        assertTrue(userService.findByEmail("as@mail.com").isPresent());
-        mvc.perform(post("http://localhost:8083/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectNode.toString()))
-                .andExpect(status().isConflict());
+                mvc.perform(post("/user")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                        .andExpect(status().isOk());
 
     }
 
+    private void addTestUser() {
+        userRepository.save(User.builder()
+                .id(1)
+                .name("Poxos")
+                .surname("Poxosyan")
+                .email("poxos@mail.ru")
+                .password("poxos")
+                .userType(UserType.STUDENT)
+                .build());
+
+
+    }
 }
